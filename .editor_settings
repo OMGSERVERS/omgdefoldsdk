@@ -1,0 +1,159 @@
+{
+  :bundle {
+    :build-report false
+    :contentless false
+    :debug-symbols false
+    :liveupdate false
+    :macos {
+      :architecture {
+        :arm64-macos true
+        :x86_64-macos true
+      }
+    }
+    :texture-compression "enabled"
+    :variant "headless"
+  }
+  :code {
+    :find {
+      :replacement "between_messages"
+      :term "multicast_binary_message"
+    }
+  }
+  :search-in-files {
+    :exts ""
+    :include-libraries false
+    :term "assert(instance,"
+  }
+  :workflow {
+    :recent-files [
+      [
+        "/omgservers/omgplayer/impl/omghttp.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgplayer/impl/omgmessages.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgplayer/impl/omgmethods.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgplayer/impl/omgprocess.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgplayer/impl/omgstate.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgplayer/omgmethods.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgserver/omgserverconstants.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgserver/omgserverconfig.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgserver.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgserver/omghttp.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgserver/omgsystem.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgserver/omgevents.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgserver/omgclient.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgserver/omgprocess.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgserver/omgconfig.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgserver/omgcommands.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgserver/omginstance.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgserver/omgconstants.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgserver/omgdispatcher.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgplayer/omgclient.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgplayer/omgconfig.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgplayer/omgconstants.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgplayer/omgdispatcher.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgplayer/omgevents.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgplayer/omginstance.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgplayer/omgmessages.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgplayer/omgprocess.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgplayer/omgstate.lua"
+        :code
+      ]
+      [
+        "/game.project"
+        :cljfx-form-view
+      ]
+      [
+        "/omgservers/omgplayer/omghttp.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgplayer/omgplayer.lua"
+        :code
+      ]
+      [
+        "/omgservers/omgserver/omgserver.lua"
+        :code
+      ]
+    ]
+  }
+}
