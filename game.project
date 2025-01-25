@@ -1,5 +1,5 @@
 [bootstrap]
-main_collection = /main/main.collectionc
+main_collection = /client/client.collectionc
 
 [script]
 shared_state = 1
@@ -13,7 +13,8 @@ input_method = HiddenInputField
 
 [project]
 title = omgdefold
-dependencies#0 = https://github.com/defold/extension-crypt/archive/master.zip
+dependencies#0 = https://github.com/defold/extension-crypt/archive/refs/tags/1.1.0.zip
+dependencies#1 = https://github.com/defold/extension-websocket/archive/refs/tags/4.0.0.zip
 
 [library]
 include_dirs = omgservers

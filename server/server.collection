@@ -1,0 +1,14 @@
+name: "server"
+instances {
+  id: "lobby_runtime"
+  prototype: "/server/lobby_runtime/lobby_runtime.go"
+}
+instances {
+  id: "match_runtime"
+  prototype: "/server/match_runtime/match_runtime.go"
+}
+instances {
+  id: "server_manager"
+  prototype: "/server/server_manager/server_manager.go"
+}
+scale_along_z: 0

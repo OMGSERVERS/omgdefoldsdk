@@ -1,0 +1,6 @@
+name: "main"
+instances {
+  id: "client"
+  prototype: "/client/client.go"
+}
+scale_along_z: 0

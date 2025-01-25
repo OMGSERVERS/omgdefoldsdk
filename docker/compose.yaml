@@ -1,0 +1,105 @@
+name: development
+
+services:
+  gateway:
+    image: "envoyproxy/envoy:v1.28-latest"
+    container_name: "gateway"
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    networks:
+      - omgservers
+    volumes:
+      - ./gateway_config.yaml:/etc/envoy/gateway_config.yaml:ro
+    command: "-c /etc/envoy/gateway_config.yaml"
+  docker:
+    image: "alpine/socat"
+    container_name: "docker"
+    restart: unless-stopped
+    networks:
+      - omgservers
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: "tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock"
+  database:
+    image: "postgres:16.1"
+    container_name: "database"
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=omgservers
+      - POSTGRES_PASSWORD=omgservers
+      - POSTGRES_DB=omgservers
+    networks:
+      - omgservers
+  broker:
+    image: "apache/activemq-artemis:2.33.0-alpine"
+    container_name: "broker"
+    restart: unless-stopped
+    environment:
+      - ARTEMIS_USER=omgservers
+      - ARTEMIS_PASSWORD=omgservers
+    ports:
+      - "8161:8161"
+    networks:
+      - omgservers
+    volumes:
+      - ./broker_config.xml:/var/lib/artemis-instance/etc-override/broker.xml
+      - ./broker_log4j2.properties:/var/lib/artemis-instance/etc-override/log4j2.properties
+  registry:
+    image: "registry:2.8.3"
+    container_name: "registry"
+    restart: unless-stopped
+    volumes:
+      - ./registry_config.yaml:/etc/docker/registry/registry_config.yaml:ro
+      - ./jwt_issuer_cert.pem:/root/certs/bundle/jwt_issuer_cert.pem
+    ports:
+      - "5000:5000"
+    networks:
+      - omgservers
+    command: "/etc/docker/registry/registry_config.yaml"
+  service:
+    image: "omgservers/service:${OMGSERVERS_VERSION}"
+    container_name: "service"
+    restart: unless-stopped
+    networks:
+      - omgservers
+    depends_on:
+      - database
+      - broker
+    volumes:
+      - ./jwt_private_key.pem:/jwt_issuer/private_key.pem:ro
+      - ./jwt_public_key.pem:/jwt_issuer/public_key.pem:ro
+    environment:
+      - OMGSERVERS_SERVER_X5C=MIIFGDCCAwCgAwIBAgIUMFIuRDQIpaoal+4IpE4qLAaWCJAwDQYJKoZIhvcNAQELBQAwHDEaMBgGA1UEAwwRY2Eub21nc2VydmVycy5jb20wHhcNMjQwNzI2MjAyNzM2WhcNMjcwNzI2MjAyNzM2WjAVMRMwEQYDVQQDDApvbWdzZXJ2ZXJzMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAsu6S++nQyen62g5+Q8bEr5ZYm/Cy2lgd8VqPoPrzQNrPBIPZPPEzMSlpFWF4CDbKHcsqpSvyYL/idzDYt/gbpI+CTK7uXNk9irgrnKII3K6fNTlfzj/10vWR1CIgpEW3uyHoQCsj1XQ7YTwIc9v+NzYe+F6tcHnUqFBiz/2g3eQvvMLwIJXbIVk2399bPgkR4X1KCBcTYosB9AG2IzopqyJKeueYbCIF9eMJEBgsRqYK0vWDahVMNC7U96ZgENVIf2VEEtTAYDDbr4o6Iw2B9vByoArgJsmegH4TptuW3RI8y0srsAWQOwZ9/doEPaXYHirs+UR9Qy6urg6ReLVr5FddfYBymIb4W3GtiVjKqtc+v5tXa89FjpG+osnYkRUT2EmLaQc0osnoCrrudiokwAOzN84QWB9RVp20nbfcPrr4ITUlMQFpRZadaPSpFd4iF3PeB21IpKqBiupaGHne0twNfjTiIobTB6oTM0LZqTpYHyl3HQ03mPM5jTcQqPAZgLqLga7feYjOz5GoBazeazzAN4OqSj5/o3ShIK0aN5YvL/7jDnqfnKCCXnuKjRblomzCt34kTeGbjqJ/NB9YvW03egPhPoUQ6BGi8FcmNbSo8f+j2f2lN9uK5z+OO6Ky0CtB+26z6DOhAk6zm0rkYji2/gfS5ftIY8zDIZ3XKJMCAwEAAaNZMFcwFQYDVR0RBA4wDIIKb21nc2VydmVyczAdBgNVHQ4EFgQUxAacQCyFYdsLI+6OW4E23BvT6hIwHwYDVR0jBBgwFoAUlm8JZMuyJ+wuvzE1yXsSbYxPDmQwDQYJKoZIhvcNAQELBQADggIBAJ0O/aTm8N6vaQoerUCtswv2uHObA4fy3rC/e/TEpbeA/utUnYX+uCmjqBjplIHPoB95njMJDbtCbkPv1Y1+vxvoVTn38Ty/S12PnoX2eow/PCQnscixzB9jwbw/fO/UzujFOfc0aKbTlbqQCYXZG466MpBS/Edh0FQtZXxYowKZ7uQg9o675vMXg8tMmODt0IxaUf33bvoN41G+n0/3078RLnLNAyvPoGMdW2FZscjn+3oIZEx78dB+Kmp9JTDcLmxoduJvxduytg7zgcR6pz06th3WYgpBla1Tmreqmz4m4/Gm9W05vl1bwiF/YfackbQ/1jOD9CoKkOMhF1A+q2Rg3ypEDGbjsQJJv6SDfbaIdPXZECl3VR1Pt6oQzskMuKj/1vtqNbRanJdznUq0dZ3KYkuCtRl292Da05SuTIDA36Vmum7WS0uoBcug9TGw3BYQcBdWw09IOkDPOILvFafpxfgnMYNnUOL19EaQDhi/dY4BWInlB27zSrCH5DqVvm+xs2GxIu+QNKjTdtDH+hpUJuY/tJSFs43uWHHnu4YzfslWoBbDt8pn/NILrU5JGuTkZ/RF5Ww8EZf/01DPO6SiZlwvmGYVST+PBpfunufCWheiRW76oJsarVi3BQijVqOTobpkvXqyjFKRoX1TNH2pYuTmg6IsGDdCFpDBmeag
+      - OMGSERVERS_SERVER_SERVICE_USER_PASSWORD=service
+      - OMGSERVERS_DATABASE_PASSWORD=omgservers
+      - OMGSERVERS_BROKER_PASSWORD=omgservers
+      - OMGSERVERS_BUILDER_TOKEN=1167db115da39e5c7776c661e463fe7933
+      - OMGSERVERS_LOGGING_APP_LOGS_LEVEL=${SERVICE_LOGGING_LEVEL}
+      - OMGSERVERS_BOOTSTRAP_ENABLED=true
+      - OMGSERVERS_BOOTSTRAP_ADMIN_USER_PASSWORD=admin
+      - OMGSERVERS_BOOTSTRAP_SUPPORT_USER_PASSWORD=support
+      - OMGSERVERS_BOOTSTRAP_REGISTRY_USER_PASSWORD=registry
+      - OMGSERVERS_BOOTSTRAP_BUILDER_USER_PASSWORD=builder
+      - OMGSERVERS_BOOTSTRAP_SERVICE_USER_PASSWORD=service
+      - OMGSERVERS_BOOTSTRAP_DISPATCHER_USER_PASSWORD=dispatcher
+      - OMGSERVERS_BOOTSTRAP_DEFAULT_POOL_DOCKER_HOSTS_0__DOCKER_DAEMON_URI=tcp://docker:2375
+      - OMGSERVERS_BOOTSTRAP_DEFAULT_POOL_DOCKER_HOSTS_0__CPU_COUNT=800
+      - OMGSERVERS_BOOTSTRAP_DEFAULT_POOL_DOCKER_HOSTS_0__MEMORY_SIZE=8192
+      - OMGSERVERS_BOOTSTRAP_DEFAULT_POOL_DOCKER_HOSTS_0__MAX_CONTAINERS=16
+  dispatcher:
+    image: "omgservers/dispatcher:${OMGSERVERS_VERSION}"
+    container_name: "dispatcher"
+    restart: unless-stopped
+    networks:
+      - omgservers
+    depends_on:
+      - service
+    volumes:
+      - ./jwt_public_key.pem:/jwt_issuer/public_key.pem:ro
+    environment:
+      - OMGSERVERS_DISPATCHER_USER_PASSWORD=dispatcher
+      - OMGSERVERS_LOGGING_APP_LOGS_LEVEL=${DISPATCHER_LOGGING_LEVEL}
+networks:
+  omgservers:
+    name: omgservers

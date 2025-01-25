@@ -1,0 +1,64 @@
+local omgserver = require("omgservers.omgserver.omgserver")
+
+local SERVER_EVENT_HASH = hash("server_event")
+
+local function handle_started(self)
+	print(socket.gettime() .. " [MATCH] A match started")
+end
+
+-- https://github.com/OMGSERVERS/omgservers/blob/main/.techdocs/runtime_commands.md
+local function handle_command(self, command_qualifier, command_body)
+	if command_qualifier == omgserver.constants.INIT_RUNTIME then
+		local runtime_config = command_body.runtime_config
+		local version_config = runtime_config.version_config
+		print(socket.gettime() .. " [MATCH] Runtime was initialized:")
+		pprint(version_config)
+		
+	elseif command_qualifier == omgserver.constants.ADD_CLIENT then
+		local user_id = command_body.user_id
+		local client_id = command_body.client_id
+		local profile = command_body.profile
+		print(socket.gettime() .. " [MATCH] Client " .. client_id .. " of user " .. user_id .. " was added")
+		print(socket.gettime() .. " [MATCH] Profile:")
+		pprint(profile)
+		
+	elseif command_qualifier == omgserver.constants.DELETE_CLIENT then
+		local client_id = command_body.client_id
+		print(socket.gettime() .. " [MATCH] Client " .. client_id .. " was deleted")
+		
+	elseif command_qualifier == omgserver.constants.HANDLE_MESSAGE then
+		local client_id = command_body.client_id
+		local message = command_body.message
+		print(socket.gettime() .. " [MATCH] Message from client " .. tostring(client_id) .. " was received:")
+		pprint(message)
+	else
+		error("[SERVER_MANAGER] Unsupported command was received, command_qualifier=" .. tostring(command_qualifier))
+	end
+end
+
+local function handle_message(self, client_id, message)
+	print(socket.gettime() .. " [MATCH] Message was received, client_id=" .. client_id .. ", message=" .. message)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == SERVER_EVENT_HASH then
+		local event = message
+		local event_qualifier = event.qualifier
+		local event_body = event.body
+
+		if event_qualifier == omgserver.constants.SERVER_STARTED then
+			handle_started(self)
+		elseif event_qualifier == omgserver.constants.COMMAND_RECEIVED then
+			local command_qualifier = event_body.qualifier
+			local command_body = event_body.body
+			handle_command(self, command_qualifier, command_body)
+
+		elseif event_qualifier == omgserver.constants.MESSAGE_RECEIVED then
+			local client_id = event_body.client_id
+			local message = event_body.message
+			handle_message(self, client_id, message)
+		else
+			error("[SERVER_MANAGER] Unsupported event was received, event_qualifier=" .. tostring(event_qualifier))
+		end
+	end
+end

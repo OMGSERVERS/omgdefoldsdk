@@ -25,7 +25,7 @@ omgconfig = {
 		assert(options.stage, "The value stage must not be nil.")
 		assert(options.event_handler, "The value event_handler must not be null.")
 
-		local service_url = options.service_url or "https://api.omgservers.com"
+		local service_url = options.service_url or "https://demoserver.omgservers.com"
 		local debug_logging = options.debug_logging or false
 		local trace_logging = options.trace_logging or false
 		local default_interval = options.default_interval or 1
