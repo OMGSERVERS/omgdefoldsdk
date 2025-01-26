@@ -3,7 +3,7 @@ local omgserver = require("omgservers.omgserver.omgserver")
 local SERVER_EVENT_HASH = hash("server_event")
 
 local function handle_started(self)
-	print(socket.gettime() .. " [MATCH] A match started")
+	print(socket.gettime() .. " [MATCH] Match was started")
 end
 
 -- https://github.com/OMGSERVERS/omgservers/blob/main/.techdocs/runtime_commands.md
@@ -17,8 +17,9 @@ local function handle_command(self, command_qualifier, command_body)
 	elseif command_qualifier == omgserver.constants.ADD_CLIENT then
 		local user_id = command_body.user_id
 		local client_id = command_body.client_id
+		local group_name = command_body.group_name
 		local profile = command_body.profile
-		print(socket.gettime() .. " [MATCH] Client " .. client_id .. " of user " .. user_id .. " was added")
+		print(socket.gettime() .. " [MATCH] Client " .. client_id .. " of user " .. user_id .. " was added to group " .. group_name)
 		print(socket.gettime() .. " [MATCH] Profile:")
 		pprint(profile)
 		
