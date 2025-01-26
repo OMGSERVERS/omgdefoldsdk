@@ -12,3 +12,4 @@ Thumbs.db
 builtins
 .editor_settings
 /.omgserversctl
+client/localtesting.lua
