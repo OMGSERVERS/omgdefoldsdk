@@ -2,7 +2,6 @@
 set -e
 set -o pipefail
 
-SERVICE_URL="http://localhost:8080"
 TENANT_ALIAS="omgservers"
 PROJECT_ALIAS="omgdefold"
 DOCKER_IMAGE="omgservers/omgdefold:latest"
@@ -88,7 +87,7 @@ handler_reset() {
 }
 
 handler_init() {
-  handler_ctl environment useEnvironment docker "${SERVICE_URL}"
+  handler_ctl environment useLocalServer
 
   echo "Create a new tenant"
 
@@ -160,7 +159,7 @@ handler_init() {
   CONFIG="./client/localtesting.lua"
   cat > ${CONFIG} << EOF
 return {
-  url = "${SERVICE_URL}",
+  url = "http://localhost:8080",
   tenant = "${TENANT_ALIAS}",
   project = "${PROJECT_ALIAS}",
   stage = "${STAGE}",
@@ -195,7 +194,7 @@ handler_details() {
 handler_build() {
   echo "Building \"${DOCKER_IMAGE}\""
   docker build -t ${DOCKER_IMAGE} .
-  echo "\"${DOCKER_IMAGE}\" is built"
+  echo "Image \"${DOCKER_IMAGE}\" is built"
 }
 
 handler_deploy() {
