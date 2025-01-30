@@ -1,12 +1,12 @@
 [bootstrap]
-main_collection = /client/client.collectionc
+main_collection = /game/game.collectionc
 
 [script]
 shared_state = 1
 
 [display]
-width = 960
-height = 640
+width = 640
+height = 480
 
 [android]
 input_method = HiddenInputField

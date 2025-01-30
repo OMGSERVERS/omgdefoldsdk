@@ -1,6 +1,6 @@
 name: "main"
 instances {
   id: "client"
-  prototype: "/client/client.go"
+  prototype: "/game/client/client.go"
 }
 scale_along_z: 0

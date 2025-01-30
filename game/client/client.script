@@ -37,16 +37,8 @@ local function handle_event(self, event)
 		local message = event_body.message
 		print(socket.gettime() .. " [CLIENT] Message was received, message=" .. message)
 
-		self.omginstance:send_text_message(json.encode({
-			text = "confirm_message",
-		}))
-
 	elseif event_qualifier == omgplayer.constants.CONNECTION_UPGRADED then
 		print(socket.gettime() .. " [CLIENT] Connection was upgraded")
-
-		self.omginstance:send_text_message(json.encode({
-			text = "hello_message",
-		}))
 
 	elseif event_qualifier == omgplayer.constants.PLAYER_FAILED then
 		local reason = event_body.reason
@@ -57,11 +49,11 @@ end
 function init(self)
 	local configuration
 	if sys.get_engine_info().is_debug then
-		configuration = require("client.localtesting")
+		configuration = require("game.localtesting")
 		print(socket.gettime() .. " [CLIENT] Using localtesting configuration")
 	else
-		configuration = require("client.production")
-		print(socket.gettime() .. " [CLIENT] Using production configuration")
+		configuration = require("game.demoserver")
+		print(socket.gettime() .. " [CLIENT] Using demoserver configuration")
 	end
 	pprint(configuration)
 
