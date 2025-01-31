@@ -25,7 +25,7 @@ the [Defold documentation](https://defold.com/manuals/libraries/#setting-up-libr
 
 ---
 
-## Template Project
+## Project Template
 
 - [Game-side](https://github.com/OMGSERVERS/omgdefold/tree/main/game): contains the game-side logic of the demo
   project using OMGPLAYER SDK.
@@ -41,28 +41,3 @@ the [Defold documentation](https://defold.com/manuals/libraries/#setting-up-libr
   building a headless version of the game.
 - [Localtesting Script](https://github.com/OMGSERVERS/omgdefold/blob/main/omglocaltestingctl.sh): A script to perform
   the most common local testing operations.
-
----
-
-# Localtesting
-
-The script `./omglocaltestingctl.sh` allows you to:
-
-- Start and stop the local environment
-- Initialize a tenant and developer account
-- Deploy a new Docker image to test it
-
-Run `./omglocaltestingctl.sh help` to see all available options.
-
-## How It Works
-
-It runs containers in Docker using the `compose.yaml` file from the `localtesting` folder.  
-The following containers are started:
-
-- gateway – exposes port 8080 on localhost and routes requests between containers.
-- registry – stores Docker images.
-- dispatcher – manages WebSocket clients and runtime connections.
-- service – implements OMGSERVERS logic.
-- broker – delivers events across multiple service instances (not applicable in the local environment).
-- database – stores backend data.
-- docker – provides access to the Docker daemon via HTTP instead of a Unix socket, which requires root user permissions.
