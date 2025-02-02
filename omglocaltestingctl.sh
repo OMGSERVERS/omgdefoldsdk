@@ -18,9 +18,6 @@ handler_help() {
   if [ -z "$1" -o "$1" = "help" ]; then
     internal_print_command " $0 help" "Display this help message"
   fi
-  if [ -z "$1" -o "$1" = "ctl" ]; then
-    internal_print_command " $0 ctl" "Execute OMGSERVERS ctl command"
-  fi
   if [ -z "$1" -o "$1" = "up" ]; then
     internal_print_command " $0 up" "Start the local environment"
   fi
@@ -28,7 +25,7 @@ handler_help() {
     internal_print_command " $0 ps" "List running containers"
   fi
   if [ -z "$1" -o "$1" = "logs" ]; then
-    internal_print_command " $0 logs <options>" "Show container logs"
+    internal_print_command " $0 logs [options]" "Show container logs"
   fi
   if [ -z "$1" -o "$1" = "down" ]; then
     internal_print_command " $0 down" "Stop the local environment"
@@ -48,14 +45,6 @@ handler_help() {
   if [ -z "$1" -o "$1" = "deploy" ]; then
     internal_print_command " $0 deploy <url> <user> <password>" "Deploy a new Docker image"
   fi
-}
-
-handler_ctl() {
-  docker run --rm \
-    --network=host \
-    -v ${PWD}/.omgserversctl:/opt/omgserversctl/.omgserversctl \
-    -v ${PWD}/config.json:/opt/omgserversctl/config.json \
-    omgservers/ctl:${OMGSERVERS_VERSION} $@
 }
 
 handler_ps() {
@@ -80,51 +69,51 @@ handler_init() {
   echo "$(date) Using, PROJECT_ALIAS=\"${PROJECT_ALIAS}\""
   echo "$(date) Using, STAGE_ALIAS=\"${STAGE_ALIAS}\""
 
-  handler_ctl environment useEnvironment local "http://localhost:8080"
+  ./omgserversctl.sh environment useEnvironment local "http://localhost:8080"
 
   echo "$(date) Create a new tenant"
 
-  handler_ctl support createToken "support" "support"
-  handler_ctl support createTenant
+  ./omgserversctl.sh support createToken "support" "support"
+  ./omgserversctl.sh support createTenant
 
-  TENANT=$(handler_ctl environment printVariable TENANT)
+  TENANT=$(./omgserversctl.sh environment printVariable TENANT)
   if [ -z "${TENANT}" ]; then
     echo "ERROR: TENANT was not found" >&2
     exit 1
   fi
 
-  handler_ctl support createTenantAlias ${TENANT} ${TENANT_ALIAS}
+  ./omgserversctl.sh support createTenantAlias ${TENANT} ${TENANT_ALIAS}
 
   echo "$(date) Create a new project"
 
-  handler_ctl support createProject ${TENANT_ALIAS}
+  ./omgserversctl.sh support createProject ${TENANT_ALIAS}
 
-  PROJECT=$(handler_ctl environment printVariable PROJECT)
+  PROJECT=$(./omgserversctl.sh environment printVariable PROJECT)
   if [ -z "${PROJECT}" ]; then
     echo "ERROR: PROJECT was not found" >&2
     exit 1
   fi
 
-  STAGE=$(handler_ctl environment printVariable STAGE)
+  STAGE=$(./omgserversctl.sh environment printVariable STAGE)
   if [ -z "${STAGE}" ]; then
     echo "ERROR: STAGE was not found" >&2
     exit 1
   fi
 
-  handler_ctl support createProjectAlias ${TENANT_ALIAS} ${PROJECT} ${PROJECT_ALIAS}
-  handler_ctl support createStageAlias ${TENANT_ALIAS} ${STAGE} ${STAGE_ALIAS}
+  ./omgserversctl.sh support createProjectAlias ${TENANT_ALIAS} ${PROJECT} ${PROJECT_ALIAS}
+  ./omgserversctl.sh support createStageAlias ${TENANT_ALIAS} ${STAGE} ${STAGE_ALIAS}
 
   echo "$(date) Create a new developer account"
 
-  handler_ctl support createDeveloper
+  ./omgserversctl.sh support createDeveloper
 
-  DEVELOPER_USER=$(handler_ctl environment printVariable DEVELOPER_USER)
+  DEVELOPER_USER=$(./omgserversctl.sh environment printVariable DEVELOPER_USER)
   if [ -z "${DEVELOPER_USER}" ]; then
     echo "ERROR: DEVELOPER_USER was not found" >&2
     exit 1
   fi
 
-  DEVELOPER_PASSWORD=$(handler_ctl environment printVariable DEVELOPER_PASSWORD)
+  DEVELOPER_PASSWORD=$(./omgserversctl.sh environment printVariable DEVELOPER_PASSWORD)
   if [ -z "${DEVELOPER_PASSWORD}" ]; then
     echo "ERROR: DEVELOPER_PASSWORD was not found" >&2
     exit 1
@@ -132,15 +121,15 @@ handler_init() {
 
   echo "$(date) Configure developer permissions"
 
-  handler_ctl support createTenantPermission ${TENANT_ALIAS} ${DEVELOPER_USER} TENANT_VIEWER
-  handler_ctl support createProjectPermission ${TENANT_ALIAS} ${PROJECT_ALIAS} ${DEVELOPER_USER} VERSION_MANAGER
-  handler_ctl support createProjectPermission ${TENANT_ALIAS} ${PROJECT_ALIAS} ${DEVELOPER_USER} PROJECT_VIEWER
-  handler_ctl support createStagePermission ${TENANT_ALIAS} ${PROJECT_ALIAS} ${STAGE} ${DEVELOPER_USER} DEPLOYMENT_MANAGER
-  handler_ctl support createStagePermission ${TENANT_ALIAS} ${PROJECT_ALIAS} ${STAGE} ${DEVELOPER_USER} STAGE_VIEWER
+  ./omgserversctl.sh support createTenantPermission ${TENANT_ALIAS} ${DEVELOPER_USER} TENANT_VIEWER
+  ./omgserversctl.sh support createProjectPermission ${TENANT_ALIAS} ${PROJECT_ALIAS} ${DEVELOPER_USER} VERSION_MANAGER
+  ./omgserversctl.sh support createProjectPermission ${TENANT_ALIAS} ${PROJECT_ALIAS} ${DEVELOPER_USER} PROJECT_VIEWER
+  ./omgserversctl.sh support createStagePermission ${TENANT_ALIAS} ${PROJECT_ALIAS} ${STAGE} ${DEVELOPER_USER} DEPLOYMENT_MANAGER
+  ./omgserversctl.sh support createStagePermission ${TENANT_ALIAS} ${PROJECT_ALIAS} ${STAGE} ${DEVELOPER_USER} STAGE_VIEWER
 
   echo "$(date) Login using developer account, DEVELOPER_USER=\"${DEVELOPER_USER}\", DEVELOPER_PASSWORD=\"${DEVELOPER_PASSWORD}\""
 
-  handler_ctl developer createToken ${DEVELOPER_USER} ${DEVELOPER_PASSWORD}
+  ./omgserversctl.sh developer createToken ${DEVELOPER_USER} ${DEVELOPER_PASSWORD}
 
   echo "$(date) All is done"
 }
@@ -164,13 +153,13 @@ handler_deploy() {
 
   echo "$(date) Login using developer account"
 
-  handler_ctl environment useEnvironment target "${SERVICE_URL}"
-  handler_ctl developer createToken "${DEVELOPER_USER}" "${DEVELOPER_PASSWORD}"
+  ./omgserversctl.sh environment useEnvironment target "${SERVICE_URL}"
+  ./omgserversctl.sh developer createToken "${DEVELOPER_USER}" "${DEVELOPER_PASSWORD}"
 
   echo "$(date) Create a new version"
 
-  handler_ctl developer createVersion ${TENANT_ALIAS} ${PROJECT_ALIAS} "./config.json"
-  VERSION=$(handler_ctl environment printVariable VERSION)
+  ./omgserversctl.sh developer createVersion ${TENANT_ALIAS} ${PROJECT_ALIAS} "./config.json"
+  VERSION=$(./omgserversctl.sh environment printVariable VERSION)
   if [ -z "${VERSION}" -o "${VERSION}" == "null" ]; then
     echo "ERROR: VERSION was not found" >&2
     exit 1
@@ -185,8 +174,8 @@ handler_deploy() {
 
   echo "$(date) Deploy a new version"
 
-  handler_ctl developer deployVersion ${TENANT_ALIAS} ${PROJECT_ALIAS} ${STAGE_ALIAS} ${VERSION}
-  DEPLOYMENT=$(handler_ctl environment printVariable DEPLOYMENT)
+  ./omgserversctl.sh developer deployVersion ${TENANT_ALIAS} ${PROJECT_ALIAS} ${STAGE_ALIAS} ${VERSION}
+  DEPLOYMENT=$(./omgserversctl.sh environment printVariable DEPLOYMENT)
   if [ -z "${DEPLOYMENT}" -o "${DEPLOYMENT}" == "null" ]; then
     echo "ERROR: DEPLOYMENT was not found" >&2
     exit 1
@@ -196,8 +185,8 @@ handler_deploy() {
 }
 
 handler_test() {
-  DEVELOPER_USER=$(handler_ctl environment printVariable DEVELOPER_USER)
-  DEVELOPER_PASSWORD=$(handler_ctl environment printVariable DEVELOPER_PASSWORD)
+  DEVELOPER_USER=$(./omgserversctl.sh environment printVariable DEVELOPER_USER)
+  DEVELOPER_PASSWORD=$(./omgserversctl.sh environment printVariable DEVELOPER_PASSWORD)
 
   if [ -z "${DEVELOPER_USER}" -o -z "${DEVELOPER_PASSWORD}" ]; then
     echo "ERROR: Localtesting developer account was not found" >&2
@@ -222,9 +211,6 @@ handler_build() {
 if [ "$1" = "help" ]; then
   shift
   handler_help "$*"
-elif [ "$1" = "ctl" ]; then
-  shift
-  handler_ctl $@
 elif [ "$1" = "up" ]; then
   handler_up
 elif [ "$1" = "ps" ]; then
