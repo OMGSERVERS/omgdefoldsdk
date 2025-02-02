@@ -1,6 +1,6 @@
 return {
 	url = "https://demoserver.omgservers.com",
-	tenant = "omgservers",
+	tenant = "omgdefold",
 	project = "omgdefold",
 	stage = "default",
 }

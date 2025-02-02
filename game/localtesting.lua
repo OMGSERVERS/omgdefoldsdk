@@ -1,6 +1,6 @@
 return {
 	url = "http://localhost:8080",
-	tenant = "omgservers",
+	tenant = "omgdefold",
 	project = "omgdefold",
 	stage = "default",
 }
