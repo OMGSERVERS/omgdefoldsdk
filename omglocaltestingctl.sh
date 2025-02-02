@@ -167,8 +167,11 @@ handler_deploy() {
 
   echo "$(date) Push docker image"
 
-  TARGET_IMAGE="localhost:5000/omgservers/${TENANT_ALIAS}/${PROJECT_ALIAS}/universal:${VERSION}"
-  docker login -u ${DEVELOPER_USER} -p ${DEVELOPER_PASSWORD} "localhost:5000"
+  REGISTRY_SERVER=$(echo ${SERVICE_URL} | sed 's/^https*:\/\///')
+  echo "$(date) Using, REGISTRY_SERVER=${REGISTRY_SERVER}"
+
+  TARGET_IMAGE="${REGISTRY_SERVER}/omgservers/${TENANT_ALIAS}/${PROJECT_ALIAS}/universal:${VERSION}"
+  docker login -u ${DEVELOPER_USER} -p ${DEVELOPER_PASSWORD} "${REGISTRY_SERVER}"
   docker tag ${DOCKER_IMAGE} ${TARGET_IMAGE}
   docker push ${TARGET_IMAGE}
 
