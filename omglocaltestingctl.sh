@@ -4,48 +4,58 @@ set -o pipefail
 source omglocaltestingctl.env
 export TZ=UTC
 
-# HANDLERS
+# INTERNAL
 
-print_command() {
-  printf "  %-40s %s\n" "$1" "$2"
+internal_print_command() {
+  printf "  %-60s %s\n" "$1" "$2"
 }
+
+# HANDLERS
 
 handler_help() {
   echo "OMGLOCALTESTING ctl, v${OMGSERVERS_VERSION}"
   echo "Usage:"
   if [ -z "$1" -o "$1" = "help" ]; then
-    print_command " $0 help" "Display this help message"
-  fi
-  if [ -z "$1" -o "$1" = "up" ]; then
-    print_command " $0 up" "Start the local environment"
-  fi
-  if [ -z "$1" -o "$1" = "ps" ]; then
-    print_command " $0 ps" "List running containers"
-  fi
-  if [ -z "$1" -o "$1" = "logs" ]; then
-    print_command " $0 logs <options>" "Show container logs"
-  fi
-  if [ -z "$1" -o "$1" = "down" ]; then
-    print_command " $0 down" "Stop the local environment"
-  fi
-  if [ -z "$1" -o "$1" = "reset" ]; then
-    print_command " $0 reset" "Reset the local environment"
+    internal_print_command " $0 help" "Display this help message"
   fi
   if [ -z "$1" -o "$1" = "ctl" ]; then
-    print_command " $0 ctl" "Execute OMGSERVERS command"
+    internal_print_command " $0 ctl" "Execute OMGSERVERS ctl command"
+  fi
+  if [ -z "$1" -o "$1" = "up" ]; then
+    internal_print_command " $0 up" "Start the local environment"
+  fi
+  if [ -z "$1" -o "$1" = "ps" ]; then
+    internal_print_command " $0 ps" "List running containers"
+  fi
+  if [ -z "$1" -o "$1" = "logs" ]; then
+    internal_print_command " $0 logs <options>" "Show container logs"
+  fi
+  if [ -z "$1" -o "$1" = "down" ]; then
+    internal_print_command " $0 down" "Stop the local environment"
+  fi
+  if [ -z "$1" -o "$1" = "reset" ]; then
+    internal_print_command " $0 reset" "Reset the local environment"
   fi
   if [ -z "$1" -o "$1" = "init" ]; then
-    print_command " $0 init" "Initialize a tenant and developer account"
-  fi
-  if [ -z "$1" -o "$1" = "details" ]; then
-    print_command " $0 details" "Show tenant and developer account details"
+    internal_print_command " $0 init" "Initialize a tenant and developer account"
   fi
   if [ -z "$1" -o "$1" = "build" ]; then
-      print_command " $0 build" "Build a Docker image"
-    fi
-  if [ -z "$1" -o "$1" = "deploy" ]; then
-    print_command " $0 deploy" "Deploy a new Docker image"
+    internal_print_command " $0 build" "Build a Docker image"
   fi
+  if [ -z "$1" -o "$1" = "test" ]; then
+    internal_print_command " $0 test" "Test a new Docker image"
+  fi
+  if [ -z "$1" -o "$1" = "deploy" ]; then
+    internal_print_command " $0 deploy <url> <user> <password>" "Deploy a new Docker image"
+  fi
+}
+
+handler_ctl() {
+  docker run --rm \
+    --network=host \
+    -v ${PWD}/.omgserversctl:/opt/omgserversctl/.omgserversctl \
+    -v ${PWD}/config.json:/opt/omgserversctl/config.json \
+    omgservers/ctl:${OMGSERVERS_VERSION} $@
 }
 
 handler_ps() {
@@ -65,49 +75,16 @@ handler_down() {
   docker compose -p omgservers down -v
 }
 
-handler_ctl() {
-  docker run --rm -it \
-    --network=host \
-    -v ${PWD}/.omglocaltestingctl:/opt/omgserversctl/.omgserversctl \
-    -v ${PWD}/config.json:/opt/omgserversctl/config.json \
-    omgservers/ctl:${OMGSERVERS_VERSION} $@
-}
-
-handler_details() {
-  echo "$(date) Getting project details"
-
-  TENANT=$(handler_ctl environment printVariable TENANT)
-  PROJECT=$(handler_ctl environment printVariable PROJECT)
-  STAGE=$(handler_ctl environment printVariable STAGE)
-  DEVELOPER_USER=$(handler_ctl environment printVariable DEVELOPER_USER)
-  DEVELOPER_PASSWORD=$(handler_ctl environment printVariable DEVELOPER_PASSWORD)
-
-  if [ -z "${TENANT}" -o -z "${PROJECT}" -o -z "${STAGE}" -o -z "${DEVELOPER_USER}" -o -z "${DEVELOPER_PASSWORD}" ]; then
-    echo "ERROR: Project was not initialized" >&2
-    exit 1
-  fi
-
-  echo "$(date) TENANT=\"${TENANT}\"",
-  echo "$(date) TENANT_ALIAS=\"${TENANT_ALIAS}\""
-  echo "$(date) PROJECT=\"${PROJECT}\""
-  echo "$(date) PROJECT_ALIAS=\"${PROJECT_ALIAS}\""
-  echo "$(date) STAGE=\"${STAGE}\""
-  echo "$(date) STAGE_ALIAS=\"${STAGE_ALIAS}\""
-  echo "$(date) DEVELOPER_USER=\"${DEVELOPER_USER}\""
-  echo "$(date) DEVELOPER_PASSWORD=\"${DEVELOPER_PASSWORD}\""
-}
-
 handler_init() {
-  echo "$(date) Using tenant alias, TENANT_ALIAS=\"${TENANT_ALIAS}\""
-  echo "$(date) Using project alias, PROJECT_ALIAS=\"${PROJECT_ALIAS}\""
-  echo "$(date) Using stage alias, STAGE_ALIAS=\"${STAGE_ALIAS}\""
+  echo "$(date) Using, TENANT_ALIAS=\"${TENANT_ALIAS}\""
+  echo "$(date) Using, PROJECT_ALIAS=\"${PROJECT_ALIAS}\""
+  echo "$(date) Using, STAGE_ALIAS=\"${STAGE_ALIAS}\""
 
-  handler_ctl environment useLocalServer
+  handler_ctl environment useEnvironment local "http://localhost:8080"
 
   echo "$(date) Create a new tenant"
 
-  handler_ctl support useCredentials "support" "support"
-  handler_ctl support createToken
+  handler_ctl support createToken "support" "support"
   handler_ctl support createTenant
 
   TENANT=$(handler_ctl environment printVariable TENANT)
@@ -161,56 +138,38 @@ handler_init() {
   handler_ctl support createStagePermission ${TENANT_ALIAS} ${PROJECT_ALIAS} ${STAGE} ${DEVELOPER_USER} DEPLOYMENT_MANAGER
   handler_ctl support createStagePermission ${TENANT_ALIAS} ${PROJECT_ALIAS} ${STAGE} ${DEVELOPER_USER} STAGE_VIEWER
 
-  echo "$(date) Login using developer account"
+  echo "$(date) Login using developer account, DEVELOPER_USER=\"${DEVELOPER_USER}\", DEVELOPER_PASSWORD=\"${DEVELOPER_PASSWORD}\""
 
-  handler_ctl developer useCredentials ${DEVELOPER_USER} ${DEVELOPER_PASSWORD}
-
-  handler_details
+  handler_ctl developer createToken ${DEVELOPER_USER} ${DEVELOPER_PASSWORD}
 
   echo "$(date) All is done"
 }
 
-handler_reset() {
-  handler_down
-  handler_up
-}
-
-handler_build() {
-  echo "$(date) Using docker image, DOCKER_IMAGE=\"${DOCKER_IMAGE}\""
-
-  docker build --build-arg OMGSERVERS_VERSION="${OMGSERVERS_VERSION}" -t "${DOCKER_IMAGE}" .
-  echo "$(date) The image \"${DOCKER_IMAGE}\" has been built."
-}
-
 handler_deploy() {
-  echo "$(date) Using docker image, DOCKER_IMAGE=\"${DOCKER_IMAGE}\""
+  SERVICE_URL=$1
+  DEVELOPER_USER=$2
+  DEVELOPER_PASSWORD=$3
 
-  echo "$(date) Get tenant details"
-
-  TENANT=$(handler_ctl environment printVariable TENANT)
-  PROJECT=$(handler_ctl environment printVariable PROJECT)
-  STAGE=$(handler_ctl environment printVariable STAGE)
-  DEVELOPER_USER=$(handler_ctl environment printVariable DEVELOPER_USER)
-  DEVELOPER_PASSWORD=$(handler_ctl environment printVariable DEVELOPER_PASSWORD)
-
-  if [ -z "${TENANT}" -o -z "${PROJECT}" -o -z "${STAGE}" -o -z "${DEVELOPER_USER}" -o -z "${DEVELOPER_PASSWORD}" ]; then
-    echo "ERROR: Project was not initialized" >&2
+  if [ -z "${SERVICE_URL}" -o -z "${DEVELOPER_USER}" -o -z "${DEVELOPER_PASSWORD}" ]; then
+    handler_help "deploy"
     exit 1
   fi
 
-  echo "$(date) TENANT=\"${TENANT}\""
-  echo "$(date) PROJECT=\"${PROJECT}\""
-  echo "$(date) STAGE=\"${STAGE}\""
-  echo "$(date) DEVELOPER_USER=\"${DEVELOPER_USER}\""
-  echo "$(date) DEVELOPER_PASSWORD=\"${DEVELOPER_PASSWORD}\""
+  echo "$(date) Using, DOCKER_IMAGE=\"${DOCKER_IMAGE}\""
+  echo "$(date) Using, SERVICE_URL=\"${SERVICE_URL}\""
+  echo "$(date) Using, DEVELOPER_USER=\"${DEVELOPER_USER}\""
+  echo "$(date) Using, TENANT_ALIAS=\"${TENANT_ALIAS}\""
+  echo "$(date) Using, PROJECT_ALIAS=\"${PROJECT_ALIAS}\""
+  echo "$(date) Using, STAGE_ALIAS=\"${STAGE_ALIAS}\""
 
   echo "$(date) Login using developer account"
 
-  handler_ctl developer createToken
+  handler_ctl environment useEnvironment target "${SERVICE_URL}"
+  handler_ctl developer createToken "${DEVELOPER_USER}" "${DEVELOPER_PASSWORD}"
 
   echo "$(date) Create a new version"
 
-  handler_ctl developer createVersion ${TENANT} ${PROJECT} "./config.json"
+  handler_ctl developer createVersion ${TENANT_ALIAS} ${PROJECT_ALIAS} "./config.json"
   VERSION=$(handler_ctl environment printVariable VERSION)
   if [ -z "${VERSION}" -o "${VERSION}" == "null" ]; then
     echo "ERROR: VERSION was not found" >&2
@@ -219,14 +178,14 @@ handler_deploy() {
 
   echo "$(date) Push docker image"
 
-  TARGET_IMAGE="localhost:5000/omgservers/${TENANT}/${PROJECT}/universal:${VERSION}"
+  TARGET_IMAGE="localhost:5000/omgservers/${TENANT_ALIAS}/${PROJECT_ALIAS}/universal:${VERSION}"
   docker login -u ${DEVELOPER_USER} -p ${DEVELOPER_PASSWORD} "localhost:5000"
   docker tag ${DOCKER_IMAGE} ${TARGET_IMAGE}
   docker push ${TARGET_IMAGE}
 
   echo "$(date) Deploy a new version"
 
-  handler_ctl developer deployVersion ${TENANT} ${PROJECT} ${STAGE} ${VERSION}
+  handler_ctl developer deployVersion ${TENANT_ALIAS} ${PROJECT_ALIAS} ${STAGE_ALIAS} ${VERSION}
   DEPLOYMENT=$(handler_ctl environment printVariable DEPLOYMENT)
   if [ -z "${DEPLOYMENT}" -o "${DEPLOYMENT}" == "null" ]; then
     echo "ERROR: DEPLOYMENT was not found" >&2
@@ -236,13 +195,37 @@ handler_deploy() {
   echo "$(date) All is done"
 }
 
+handler_test() {
+  DEVELOPER_USER=$(handler_ctl environment printVariable DEVELOPER_USER)
+  DEVELOPER_PASSWORD=$(handler_ctl environment printVariable DEVELOPER_PASSWORD)
+
+  if [ -z "${DEVELOPER_USER}" -o -z "${DEVELOPER_PASSWORD}" ]; then
+    echo "ERROR: Localtesting developer account was not found" >&2
+    exit 1
+  fi
+
+  handler_deploy "http://localhost:8080" "${DEVELOPER_USER}" "${DEVELOPER_PASSWORD}"
+}
+
+handler_reset() {
+  handler_down
+  handler_up
+}
+
+handler_build() {
+  echo "$(date) Using, DOCKER_IMAGE=\"${DOCKER_IMAGE}\""
+
+  docker build --build-arg OMGSERVERS_VERSION="${OMGSERVERS_VERSION}" -t "${DOCKER_IMAGE}" .
+  echo "$(date) The image \"${DOCKER_IMAGE}\" has been built."
+}
+
 if [ "$1" = "help" ]; then
   shift
-  handler_help "$@"
-  exit 0
-fi
-
-if [ "$1" = "up" ]; then
+  handler_help "$*"
+elif [ "$1" = "ctl" ]; then
+  shift
+  handler_ctl $@
+elif [ "$1" = "up" ]; then
   handler_up
 elif [ "$1" = "ps" ]; then
   handler_ps
@@ -253,17 +236,15 @@ elif [ "$1" = "down" ]; then
   handler_down
 elif [ "$1" = "reset" ]; then
   handler_reset
-elif [ "$1" = "ctl" ]; then
-  shift
-  handler_ctl $@
 elif [ "$1" = "init" ]; then
   handler_init
-elif [ "$1" = "details" ]; then
-  handler_details
 elif [ "$1" = "build" ]; then
   handler_build
+elif [ "$1" = "test" ]; then
+  handler_test
 elif [ "$1" = "deploy" ]; then
-  handler_deploy
+  shift
+  handler_deploy $@
 else
   handler_help
 fi
