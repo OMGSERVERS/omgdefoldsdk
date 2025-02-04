@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-source omglocaltestingctl.env
+source omglocalctl.env
 
 docker run --rm \
   --network=host \

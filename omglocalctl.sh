@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 set -o pipefail
-source omglocaltestingctl.env
+source omglocalctl.env
 export TZ=UTC
 
 # INTERNAL
@@ -13,7 +13,7 @@ internal_print_command() {
 # HANDLERS
 
 handler_help() {
-  echo "OMGLOCALTESTING ctl, v${OMGSERVERS_VERSION}"
+  echo "OMGLOCAL ctl, v${OMGSERVERS_VERSION}"
   echo "Usage:"
   if [ -z "$1" -o "$1" = "help" ]; then
     internal_print_command " $0 help" "Display this help message."

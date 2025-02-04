@@ -39,5 +39,5 @@ the [Defold documentation](https://defold.com/manuals/libraries/#setting-up-libr
   configuration for the game.
 - [Server Settings](https://github.com/OMGSERVERS/omgdefold/blob/main/server.settings): contains separate settings for
   building a headless version of the game.
-- [Localtesting Script](https://github.com/OMGSERVERS/omgdefold/blob/main/omglocaltestingctl.sh): A script to perform
+- [LOCAL ctl](https://github.com/OMGSERVERS/omgdefold/blob/main/omglocalctl.sh): A script to perform
   the most common local testing operations.
