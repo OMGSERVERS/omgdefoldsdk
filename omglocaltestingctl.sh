@@ -16,34 +16,34 @@ handler_help() {
   echo "OMGLOCALTESTING ctl, v${OMGSERVERS_VERSION}"
   echo "Usage:"
   if [ -z "$1" -o "$1" = "help" ]; then
-    internal_print_command " $0 help" "Display this help message"
+    internal_print_command " $0 help" "Display this help message."
   fi
   if [ -z "$1" -o "$1" = "up" ]; then
-    internal_print_command " $0 up" "Start the local environment"
+    internal_print_command " $0 up" "Start the local environment."
   fi
   if [ -z "$1" -o "$1" = "ps" ]; then
-    internal_print_command " $0 ps" "List running containers"
+    internal_print_command " $0 ps" "List running containers."
   fi
   if [ -z "$1" -o "$1" = "logs" ]; then
-    internal_print_command " $0 logs [options]" "Show container logs"
+    internal_print_command " $0 logs [options]" "Show container logs."
   fi
   if [ -z "$1" -o "$1" = "down" ]; then
-    internal_print_command " $0 down" "Stop the local environment"
+    internal_print_command " $0 down" "Stop the local environment."
   fi
   if [ -z "$1" -o "$1" = "reset" ]; then
-    internal_print_command " $0 reset" "Reset the local environment"
+    internal_print_command " $0 reset" "Reset the local environment."
   fi
   if [ -z "$1" -o "$1" = "init" ]; then
-    internal_print_command " $0 init" "Initialize a tenant and developer account"
+    internal_print_command " $0 init" "Initialize a tenant and developer account."
   fi
   if [ -z "$1" -o "$1" = "build" ]; then
-    internal_print_command " $0 build" "Build a Docker image"
+    internal_print_command " $0 build" "Build a Docker image."
   fi
-  if [ -z "$1" -o "$1" = "test" ]; then
-    internal_print_command " $0 test" "Test a new Docker image"
+  if [ -z "$1" -o "$1" = "install" ]; then
+    internal_print_command " $0 install" "Install a Docker image locally."
   fi
   if [ -z "$1" -o "$1" = "deploy" ]; then
-    internal_print_command " $0 deploy <url> <user> <password>" "Deploy a new Docker image"
+    internal_print_command " $0 deploy <url> <user> <password>" "Deploy a Docker image to the server."
   fi
 }
 
@@ -187,7 +187,7 @@ handler_deploy() {
   echo "$(date) All is done"
 }
 
-handler_test() {
+handler_install() {
   DEVELOPER_USER=$(./omgserversctl.sh environment printVariable DEVELOPER_USER)
   DEVELOPER_PASSWORD=$(./omgserversctl.sh environment printVariable DEVELOPER_PASSWORD)
 
@@ -229,8 +229,8 @@ elif [ "$1" = "init" ]; then
   handler_init
 elif [ "$1" = "build" ]; then
   handler_build
-elif [ "$1" = "test" ]; then
-  handler_test
+elif [ "$1" = "install" ]; then
+  handler_install
 elif [ "$1" = "deploy" ]; then
   shift
   handler_deploy $@
