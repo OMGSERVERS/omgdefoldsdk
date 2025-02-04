@@ -14,14 +14,16 @@ local function handle_command(self, command_qualifier, command_body)
 		print(socket.gettime() .. " [MATCH] Runtime was initialized:")
 		pprint(version_config)
 		
-	elseif command_qualifier == omgserver.constants.ADD_CLIENT then
+	elseif command_qualifier == omgserver.constants.ADD_MATCH_CLIENT then
 		local user_id = command_body.user_id
 		local client_id = command_body.client_id
 		local group_name = command_body.group_name
 		local profile = command_body.profile
-		print(socket.gettime() .. " [MATCH] Client " .. client_id .. " of user " .. user_id .. " was added to group " .. group_name)
+		print(socket.gettime() .. " [MATCH] Client " .. client_id .. " of user " .. user_id .. " was added to the group " .. group_name)
 		print(socket.gettime() .. " [MATCH] Profile:")
 		pprint(profile)
+
+		omgserver:upgrade_connection(client_id)
 		
 	elseif command_qualifier == omgserver.constants.DELETE_CLIENT then
 		local client_id = command_body.client_id
@@ -32,13 +34,17 @@ local function handle_command(self, command_qualifier, command_body)
 		local message = command_body.message
 		print(socket.gettime() .. " [MATCH] Message from client " .. tostring(client_id) .. " was received:")
 		pprint(message)
+
 	else
-		error("[SERVER_MANAGER] Unsupported command was received, command_qualifier=" .. tostring(command_qualifier))
+		print("[MATCH_RUNTIME] Unsupported command was received, command_qualifier=" .. tostring(command_qualifier))
 	end
 end
 
 local function handle_message(self, client_id, message)
 	print(socket.gettime() .. " [MATCH] Message was received, client_id=" .. client_id .. ", message=" .. message)
+
+	local broadcast_message = client_id .. "/" .. message
+	omgserver:broadcast_binary_message(broadcast_message)
 end
 
 function on_message(self, message_id, message, sender)
@@ -59,7 +65,7 @@ function on_message(self, message_id, message, sender)
 			local message = event_body.message
 			handle_message(self, client_id, message)
 		else
-			error("[SERVER_MANAGER] Unsupported event was received, event_qualifier=" .. tostring(event_qualifier))
+			print("[MATCH_RUNTIME] Unsupported event was received, event_qualifier=" .. tostring(event_qualifier))
 		end
 	end
 end

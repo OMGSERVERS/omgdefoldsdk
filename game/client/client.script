@@ -39,6 +39,7 @@ local function handle_event(self, event)
 
 	elseif event_qualifier == omgplayer.constants.CONNECTION_UPGRADED then
 		print(socket.gettime() .. " [CLIENT] Connection was upgraded")
+		self.omginstance:send_binary_message("hello")
 
 	elseif event_qualifier == omgplayer.constants.PLAYER_FAILED then
 		local reason = event_body.reason
@@ -64,7 +65,7 @@ function init(self)
 		event_handler = function(event) handle_event(self, event) end,
 		service_url = configuration.url,
 		debug_logging = true,
-		trace_logging = true
+		trace_logging = false,
 	}
 	local omginstance = omgplayer:create()
 	self.omginstance = omginstance
@@ -76,4 +77,6 @@ end
 
 function update(self, dt)
 	self.omginstance:update(dt)
+
+	
 end

@@ -22,7 +22,7 @@ local function handle_server_event(self, event)
 		elseif runtime_qualifier == omgserver.constants.MATCH then
 			msg.post(MATCH_RUNTIME, "server_event", event)
 		else
-			error("[SERVER_MANAGER] Unsupported runtime qualifier, runtime_qualifier=" .. tostring(runtime_qualifier))
+			print("[SERVER_MANAGER] Unsupported runtime qualifier, runtime_qualifier=" .. tostring(runtime_qualifier))
 		end
 	end
 end
@@ -31,7 +31,7 @@ function init(self)
 	local options = {
 		event_handler = function(event) handle_server_event(self, event) end,
 		debug_logging = true,
-		trace_logging = true,
+		trace_logging = false,
 	}
 	omgserver:init(options)
 	omgserver:start()

@@ -6,7 +6,6 @@ local function handle_started(self)
 	print(socket.gettime() .. " [MATCH] Lobby was started")
 end
 
--- https://github.com/OMGSERVERS/omgservers/blob/main/.techdocs/runtime_commands.md
 local function handle_command(self, command_qualifier, command_body)
 	if command_qualifier == omgserver.constants.INIT_RUNTIME then
 		local runtime_config = command_body.runtime_config
@@ -22,6 +21,8 @@ local function handle_command(self, command_qualifier, command_body)
 		print(socket.gettime() .. " [MATCH] Profile:")
 		pprint(profile)
 
+		omgserver:request_matchmaking(client_id, "game")
+
 	elseif command_qualifier == omgserver.constants.DELETE_CLIENT then
 		local client_id = command_body.client_id
 		print(socket.gettime() .. " [MATCH] Client " .. client_id .. " was deleted")
@@ -32,7 +33,7 @@ local function handle_command(self, command_qualifier, command_body)
 		print(socket.gettime() .. " [MATCH] Message from client " .. tostring(client_id) .. " was received:")
 		pprint(message)
 	else
-		error("[SERVER_MANAGER] Unsupported command was received, command_qualifier=" .. tostring(command_qualifier))
+		print("[LOBBY_MANAGER] Unsupported command was received, command_qualifier=" .. tostring(command_qualifier))
 	end
 end
 
@@ -58,7 +59,7 @@ function on_message(self, message_id, message, sender)
 			local message = event_body.message
 			handle_message(self, client_id, message)
 		else
-			error("[SERVER_MANAGER] Unsupported event was received, event_qualifier=" .. tostring(event_qualifier))
+			print("[LOBBY_MANAGER] Unsupported event was received, event_qualifier=" .. tostring(event_qualifier))
 		end
 	end
 end

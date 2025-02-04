@@ -1,7 +1,7 @@
 {
   "modes": [
     {
-      "name": "mode",
+      "name": "game",
       "min_players": 1,
       "max_players": 32,
       "groups": [

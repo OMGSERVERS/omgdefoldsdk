@@ -79,7 +79,6 @@ omgdispatcher = {
 				instance.connection = connection
 			end,
 			send_text_message = function(instance, clients, encoding, message)
-				assert(clients, "The clients must not be nil.")
 				assert(encoding, "The encoding must not be nil.")
 				assert(encoding == omgconstants.BASE64_ENCODED or encoding == omgconstants.PLAIN_TEXT, "The encoding has wrong value")
 				assert(message, "The message must not be nil.")
