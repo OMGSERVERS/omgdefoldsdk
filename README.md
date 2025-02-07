@@ -27,17 +27,24 @@ the [Defold documentation](https://defold.com/manuals/libraries/#setting-up-libr
 
 ## Project Template
 
+To use the project as a template, refer to the [Defold guide](https://defold.com/manuals/editor-templates/).
+
 - [Game-side](https://github.com/OMGSERVERS/omgdefold/tree/main/game): contains the game-side logic of the demo
   project using OMGPLAYER SDK.
 - [Server-side](https://github.com/OMGSERVERS/omgdefold/tree/main/server): contains the server-side logic of the demo
   project using OMGSERVER SDK.
-- [Docker Compose](https://github.com/OMGSERVERS/omgdefold/tree/main/localtesting): use this to start OMGSERVERS in a
-  local environment for testing purposes.
 - [Dockerfile](https://github.com/OMGSERVERS/omgdefold/blob/main/Dockerfile): used to build the game runtime as a
   headless Defold build using `bob.jar`.
 - [Config JSON](https://github.com/OMGSERVERS/omgdefold/blob/main/config.json): provides matchmaking and custom
   configuration for the game.
 - [Server Settings](https://github.com/OMGSERVERS/omgdefold/blob/main/server.settings): contains separate settings for
   building a headless version of the game.
-- [LOCAL ctl](https://github.com/OMGSERVERS/omgdefold/blob/main/omglocalctl.sh): A script to perform
-  the most common local testing operations.
+
+### CTL
+
+- [OMGPROJECT ctl](https://github.com/OMGSERVERS/omgdefold/blob/main/omgprojectctl.sh): A script to build this project
+  Docker image.
+- [OMGTOOL ctl](https://github.com/OMGSERVERS/omgdefold/blob/main/omgtoolctl.sh): A script to perform
+  the most common development and local testing operations.
+- [OMGSERVERS ctl](https://github.com/OMGSERVERS/omgdefold/blob/main/omgtoolctl.sh): A script for performing low-level
+  operations on OMGSERVERS installations.
