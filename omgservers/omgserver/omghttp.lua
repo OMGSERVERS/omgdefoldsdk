@@ -58,9 +58,8 @@ omghttp = {
 					request_headers["Authorization"] = "Bearer " .. request_token
 				end
 
-				local is_empty = next(request_body) == nil
 				local encoded_body = json.encode(request_body, {
-					encode_empty_table_as_object = is_empty
+					encode_empty_table_as_object = false
 				})
 
 				local method = "POST"

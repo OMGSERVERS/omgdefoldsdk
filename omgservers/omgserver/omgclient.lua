@@ -204,6 +204,7 @@ omgclient = {
 				local command = {
 					qualifier = omgconstants.STOP_MATCHMAKING,
 					body = {
+						__object = true
 					},
 				}
 				instance.commands:add_outgoing_command(command)

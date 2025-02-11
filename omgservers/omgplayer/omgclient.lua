@@ -83,7 +83,9 @@ omgclient = {
 			end,
 			create_user = function(instance, callback)
 				local request_url = create_user_url
-				local request_body = {}
+				local request_body = {
+					__object = true
+				}
 				
 				local response_handler = function(response_status, response_body)
 					local user_id = response_body.user_id
