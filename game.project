@@ -1,5 +1,5 @@
 [bootstrap]
-main_collection = /game/game.collectionc
+main_collection = /client/client.collectionc
 
 [script]
 shared_state = 1
@@ -12,7 +12,7 @@ height = 480
 input_method = HiddenInputField
 
 [project]
-title = omgdefold
+title = omgdefoldsdk
 dependencies#0 = https://github.com/defold/extension-crypt/archive/refs/tags/1.1.0.zip
 dependencies#1 = https://github.com/defold/extension-websocket/archive/refs/tags/4.0.0.zip
 

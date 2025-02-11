@@ -21,7 +21,7 @@ FROM --platform=linux/amd64 ubuntu:latest
 
 WORKDIR /game
 
-COPY --from=builder /project/build/default/omgdefold .
+COPY --from=builder /project/build/default/omgdefoldsdk .
 RUN ls -lah .
 
-CMD ["./omgdefold.x86_64"]
+CMD ["./omgdefoldsdk.x86_64"]

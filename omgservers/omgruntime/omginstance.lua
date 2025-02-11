@@ -1,9 +1,9 @@
-local omgdispatcher = require("omgservers.omgserver.omgdispatcher")
-local omgprocess = require("omgservers.omgserver.omgprocess")
-local omgconfig = require("omgservers.omgserver.omgconfig")
-local omgclient = require("omgservers.omgserver.omgclient")
-local omgevents = require("omgservers.omgserver.omgevents")
-local omghttp = require("omgservers.omgserver.omghttp")
+local omgdispatcher = require("omgservers.omgruntime.omgdispatcher")
+local omgprocess = require("omgservers.omgruntime.omgprocess")
+local omgconfig = require("omgservers.omgruntime.omgconfig")
+local omgclient = require("omgservers.omgruntime.omgclient")
+local omgevents = require("omgservers.omgruntime.omgevents")
+local omghttp = require("omgservers.omgruntime.omghttp")
 
 local omginstance
 omginstance = {

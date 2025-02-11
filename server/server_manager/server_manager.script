@@ -1,4 +1,4 @@
-local omgserver = require("omgservers.omgserver.omgserver")
+local omgruntime = require("omgservers.omgruntime.omgruntime")
 
 local LOBBY_RUNTIME = "lobby_runtime#lobby_runtime"
 local MATCH_RUNTIME = "match_runtime#match_runtime"
@@ -8,7 +8,7 @@ local function handle_server_event(self, event)
 
 	local event_qualifier = event.qualifier
 
-	if event_qualifier == omgserver.constants.SERVER_STARTED then
+	if event_qualifier == omgruntime.constants.SERVER_STARTED then
 		local event_body = event.body
 		local runtime_qualifier = event_body.runtime_qualifier
 		print(socket.gettime() .. " [SERVER_MANAGER] Server was started, qualifier=" .. runtime_qualifier)
@@ -17,9 +17,9 @@ local function handle_server_event(self, event)
 
 	local runtime_qualifier = self.runtime_qualifier
 	if runtime_qualifier then
-		if runtime_qualifier == omgserver.constants.LOBBY then
+		if runtime_qualifier == omgruntime.constants.LOBBY then
 			msg.post(LOBBY_RUNTIME, "server_event", event)
-		elseif runtime_qualifier == omgserver.constants.MATCH then
+		elseif runtime_qualifier == omgruntime.constants.MATCH then
 			msg.post(MATCH_RUNTIME, "server_event", event)
 		else
 			print("[SERVER_MANAGER] Unsupported runtime qualifier, runtime_qualifier=" .. tostring(runtime_qualifier))
@@ -33,10 +33,10 @@ function init(self)
 		debug_logging = true,
 		trace_logging = false,
 	}
-	omgserver:init(options)
-	omgserver:start()
+	omgruntime:init(options)
+	omgruntime:start()
 end
 
 function update(self, dt)
-	omgserver:update(dt)
+	omgruntime:update(dt)
 end

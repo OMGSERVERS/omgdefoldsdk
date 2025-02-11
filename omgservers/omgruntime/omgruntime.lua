@@ -1,8 +1,8 @@
-local omgconstants = require("omgservers.omgserver.omgconstants")
-local omginstance = require("omgservers.omgserver.omginstance")
+local omgconstants = require("omgservers.omgruntime.omgconstants")
+local omginstance = require("omgservers.omgruntime.omginstance")
 
-local omgserver
-omgserver = {
+local omgruntime
+omgruntime = {
 	constants = omgconstants,
 	-- Methods
 	init = function(self, options)
@@ -63,4 +63,4 @@ omgserver = {
 	end,
 }
 
-return omgserver
+return omgruntime

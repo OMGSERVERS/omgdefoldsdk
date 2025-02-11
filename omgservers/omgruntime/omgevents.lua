@@ -1,4 +1,4 @@
-local omgconstants = require("omgservers.omgserver.omgconstants")
+local omgconstants = require("omgservers.omgruntime.omgconstants")
 
 local omgevents
 omgevents = {

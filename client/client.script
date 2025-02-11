@@ -50,10 +50,10 @@ end
 function init(self)
 	local configuration
 	if sys.get_engine_info().is_debug then
-		configuration = require("game.localtesting")
+		configuration = require("client.localtesting")
 		print(socket.gettime() .. " [CLIENT] Using localtesting configuration")
 	else
-		configuration = require("game.demoserver")
+		configuration = require("client.demoserver")
 		print(socket.gettime() .. " [CLIENT] Using demoserver configuration")
 	end
 	pprint(configuration)
@@ -76,7 +76,5 @@ function init(self)
 end
 
 function update(self, dt)
-	self.omginstance:update(dt)
-
-	
+	self.omginstance:update(dt)	
 end

@@ -1,5 +1,5 @@
-local omgconstants = require("omgservers.omgserver.omgconstants")
-local omgsystem = require("omgservers.omgserver.omgsystem")
+local omgconstants = require("omgservers.omgruntime.omgconstants")
+local omgsystem = require("omgservers.omgruntime.omgsystem")
 
 local omgdispatcher
 omgdispatcher = {

@@ -1,6 +1,6 @@
-local omgconstants = require("omgservers.omgserver.omgconstants")
-local omgcommands = require("omgservers.omgserver.omgcommands")
-local omgsystem = require("omgservers.omgserver.omgsystem")
+local omgconstants = require("omgservers.omgruntime.omgconstants")
+local omgcommands = require("omgservers.omgruntime.omgcommands")
+local omgsystem = require("omgservers.omgruntime.omgsystem")
 
 local omgclient
 omgclient = {

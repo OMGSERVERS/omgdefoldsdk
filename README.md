@@ -1,18 +1,13 @@
-# OMGDEFOLD
+# OMGDEFOLDSDK
 
 This is [OMGSERVERS](https://github.com/OMGSERVERS/omgservers) SDK
-and [Project Template](https://defold.com/manuals/editor-templates/)
 for [Defold Engine](https://github.com/defold/defold).
 
----
+This project is configured to share the `omgservers` directory, which contains:
 
-## OMGSERVERS SDK
-
-This Defold project is configured to share the `omgservers` directory, which contains:
-
-- [OMGPLAYER SDK](https://github.com/OMGSERVERS/omgdefold/tree/main/omgservers/omgplayer): used to interact with the
-  backend from game clients.
-- [OMGSERVER SDK](https://github.com/OMGSERVERS/omgdefold/tree/main/omgservers/omgserver): used to execute
+- [OMGPLAYER SDK](https://github.com/OMGSERVERS/omgdefold/tree/main/omgservers/omgplayer): used for game clients to
+  interact with the backend.
+- [OMGRUNTIME SDK](https://github.com/OMGSERVERS/omgdefold/tree/main/omgservers/omgruntime): used for executing
   backend-specific commands from game runtimes.
 
 It can be included in a game project by following the instructions provided in
@@ -23,28 +18,11 @@ the [Defold documentation](https://defold.com/manuals/libraries/#setting-up-libr
 - [Defold WebSocket Extension](https://github.com/defold/extension-websocket)
 - [Defold Cryptography Extension](https://github.com/defold/extension-crypt)
 
----
+### Getting Started with the Sample Project
 
-## Project Template
+- Run `./omgprojectctl.sh build` to build the game runtime in a Docker container.
+- Run `./omgtoolctl.sh localtesting up` to start the local testing environment in Docker.
+- Run `./omgtoolctl.sh localtesting init` to initialize the local testing server project.
+- Run `./omgtoolctl.sh localtesting install` to install the game runtime Docker container locally.
 
-To use the project as a template, refer to the [Defold guide](https://defold.com/manuals/editor-templates/).
-
-- [Game-side](https://github.com/OMGSERVERS/omgdefold/tree/main/game): contains the game-side logic of the demo
-  project using OMGPLAYER SDK.
-- [Server-side](https://github.com/OMGSERVERS/omgdefold/tree/main/server): contains the server-side logic of the demo
-  project using OMGSERVER SDK.
-- [Dockerfile](https://github.com/OMGSERVERS/omgdefold/blob/main/Dockerfile): used to build the game runtime as a
-  headless Defold build using `bob.jar`.
-- [Config JSON](https://github.com/OMGSERVERS/omgdefold/blob/main/config.json): provides matchmaking and custom
-  configuration for the game.
-- [Server Settings](https://github.com/OMGSERVERS/omgdefold/blob/main/server.settings): contains separate settings for
-  building a headless version of the game.
-
-### CTL
-
-- [OMGPROJECT ctl](https://github.com/OMGSERVERS/omgdefold/blob/main/omgprojectctl.sh): A script to build this project
-  Docker image.
-- [OMGTOOL ctl](https://github.com/OMGSERVERS/omgdefold/blob/main/omgtoolctl.sh): A script to perform
-  the most common development and local testing operations.
-- [OMGSERVERS ctl](https://github.com/OMGSERVERS/omgdefold/blob/main/omgtoolctl.sh): A script for performing low-level
-  operations on OMGSERVERS installations.
+- Open `game.project` in Defold and run it.

@@ -1,6 +1,3 @@
-local omgconstants = require("omgservers.omgserver.omgconstants")
-local omgsystem = require("omgservers.omgserver.omgsystem")
-
 local omghttp
 omghttp = {
 	--[[
