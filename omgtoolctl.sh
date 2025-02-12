@@ -4,7 +4,7 @@ source .env
 
 WORKING_DIR=${WORKING_DIR:-$PWD}
 
-docker run --rm -it \
+docker run --rm \
   --network=host \
   --env-file .env \
   -e WORKING_DIR=${WORKING_DIR} \
