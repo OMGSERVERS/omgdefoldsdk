@@ -21,8 +21,8 @@ the [Defold documentation](https://defold.com/manuals/libraries/#setting-up-libr
 ### Getting Started with the Sample Project
 
 - Run `./omgprojectctl.sh build` to build the game runtime in a Docker container.
-- Run `./omgtoolctl.sh localtesting up` to start the local testing environment in Docker.
-- Run `./omgtoolctl.sh localtesting init` to initialize the local testing server project.
-- Run `./omgtoolctl.sh localtesting install` to install the game runtime Docker container locally.
+- Run `./omgprojectctl.sh start` to start the local testing environment in Docker.
+- Run `./omgprojectctl.sh init` to initialize a project and developer account.
+- Run `./omgprojectctl.sh install` to install the game runtime locally.
 
 - Open `game.project` in Defold and run it.
