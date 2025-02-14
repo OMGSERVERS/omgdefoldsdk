@@ -1,4 +1,5 @@
 local omgplayer = require("omgservers.omgplayer.omgplayer")
+local configuration = require("client.localtesting")
 
 local function handle_event(self, event)
 	print(socket.gettime() .. " [CLIENT] Event was received, event=" .. json.encode(event))
@@ -48,14 +49,6 @@ local function handle_event(self, event)
 end
 
 function init(self)
-	local configuration
-	if sys.get_engine_info().is_debug then
-		configuration = require("client.localtesting")
-		print(socket.gettime() .. " [CLIENT] Using localtesting configuration")
-	else
-		configuration = require("client.demoserver")
-		print(socket.gettime() .. " [CLIENT] Using demoserver configuration")
-	end
 	pprint(configuration)
 
 	local options = {
