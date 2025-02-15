@@ -40,7 +40,6 @@ local function handle_event(self, event)
 
 	elseif event_qualifier == omgplayer.constants.CONNECTION_UPGRADED then
 		print(socket.gettime() .. " [CLIENT] Connection was upgraded")
-		self.omginstance:send_binary_message("hello")
 
 	elseif event_qualifier == omgplayer.constants.PLAYER_FAILED then
 		local reason = event_body.reason
