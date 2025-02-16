@@ -38,8 +38,8 @@ local function handle_event(self, event)
 		local message = event_body.message
 		print(socket.gettime() .. " [CLIENT] Message was received, message=" .. message)
 
-	elseif event_qualifier == omgplayer.constants.CONNECTION_UPGRADED then
-		print(socket.gettime() .. " [CLIENT] Connection was upgraded")
+	elseif event_qualifier == omgplayer.constants.CONNECTION_DISPATCHED then
+		print(socket.gettime() .. " [CLIENT] Connection was dispatched")
 
 	elseif event_qualifier == omgplayer.constants.PLAYER_FAILED then
 		local reason = event_body.reason

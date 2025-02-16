@@ -86,7 +86,7 @@ omgprocess = {
 						local ws_token = web_socket_config.ws_token
 
 						dispatcher:connect(ws_token, function()
-							events:connection_upgraded(upgrade_protocol)
+							events:connection_dispatched()
 						end)
 					else
 						state:fail("unsupported connection upgrade protocol, protocol=" .. upgrade_protocol)

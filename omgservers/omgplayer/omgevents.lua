@@ -85,11 +85,10 @@ omgevents = {
 				}
 				instance:add_event(event)
 			end,
-			connection_upgraded = function(instance, protocol)
+			connection_dispatched = function(instance)
 				local event = {
-					qualifier = omgconstants.CONNECTION_UPGRADED,
+					qualifier = omgconstants.CONNECTION_DISPATCHED,
 					body = {
-						protocol = protocol,
 					},
 				}
 				instance:add_event(event)
