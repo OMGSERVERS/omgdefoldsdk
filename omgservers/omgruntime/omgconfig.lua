@@ -57,7 +57,7 @@ omgconfig = {
 			event_handler = options.event_handler,
 			service_url = service_url,
 			runtime_id = runtime_id,
-			password = password,
+			password = "<hidden>",
 			runtime_qualifier = runtime_qualifier,
 			debug_logging = debug_logging,
 			trace_logging = trace_logging,
@@ -70,6 +70,8 @@ omgconfig = {
 			print(socket.gettime() .. " [OMGSERVER] Config was created")
 			pprint(instance)
 		end
+
+		instance.password = password
 
 		return instance
 	end
