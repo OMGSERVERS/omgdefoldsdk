@@ -37,20 +37,20 @@ omgdispatcher = {
 				}
 
 				if debug_logging then
-					print(socket.gettime() .. " [OMGSERVER] Connect to the dispatcher, url=" .. connection_url)
+					print(os.date() .. " [OMGSERVER] Connect to the dispatcher, url=" .. connection_url)
 				end
 
 				local connection = websocket.connect(connection_url, params, function(_, _, data)
 					if data.event == websocket.EVENT_DISCONNECTED then
 						if debug_logging then
-							print(socket.gettime() .. " [OMGSERVER] The connection to the dispatcher was disconnected")
+							print(os.date() .. " [OMGSERVER] The connection to the dispatcher was disconnected")
 						end
 
 						omgsystem:terminate_server(omgconstants.WS_EXIT_CODE, "the connection to the dispatcher was disconnected")
 
 					elseif data.event == websocket.EVENT_CONNECTED then
 						if debug_logging then
-							print(socket.gettime() .. " [OMGSERVER] Server was connected to the dispatcher")
+							print(os.date() .. " [OMGSERVER] Server was connected to the dispatcher")
 						end
 						
 						if callback then
@@ -92,7 +92,7 @@ omgdispatcher = {
 				})
 
 				if trace_logging then
-					print(socket.gettime() .. " [OMGSERVER] Outgoing message, encoded_message=" .. encoded_message)
+					print(os.date() .. " [OMGSERVER] Outgoing message, encoded_message=" .. encoded_message)
 				end
 
 				websocket.send(instance.connection, encoded_message, {

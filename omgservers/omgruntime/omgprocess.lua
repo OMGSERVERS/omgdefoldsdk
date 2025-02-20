@@ -60,7 +60,7 @@ omgprocess = {
 									instance.faster_iterations = true
 
 									if debug_logging then
-										print(socket.gettime() .. " [OMGSERVER] Switched to faster iterations")
+										print(os.date() .. " [OMGSERVER] Switched to faster iterations")
 									end
 								end
 							else
@@ -71,7 +71,7 @@ omgprocess = {
 									if instance.faster_iterations then
 										instance.faster_iterations = false
 										if debug_logging then
-											print(socket.gettime() .. " [OMGSERVER] Switched to default iterations")
+											print(os.date() .. " [OMGSERVER] Switched to default iterations")
 										end
 									end
 								end

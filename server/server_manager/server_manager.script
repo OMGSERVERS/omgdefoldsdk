@@ -4,14 +4,14 @@ local LOBBY_RUNTIME = "lobby_runtime#lobby_runtime"
 local MATCH_RUNTIME = "match_runtime#match_runtime"
 
 local function handle_server_event(self, event)
-	print(socket.gettime() .. " [SERVER_MANAGER] Event was received, event=" .. json.encode(event))
+	print(os.date() .. " [SERVER_MANAGER] Event was received, event=" .. json.encode(event))
 
 	local event_qualifier = event.qualifier
 
 	if event_qualifier == omgruntime.constants.SERVER_STARTED then
 		local event_body = event.body
 		local runtime_qualifier = event_body.runtime_qualifier
-		print(socket.gettime() .. " [SERVER_MANAGER] Server was started, qualifier=" .. runtime_qualifier)
+		print(os.date() .. " [SERVER_MANAGER] Server was started, qualifier=" .. runtime_qualifier)
 		self.runtime_qualifier = runtime_qualifier
 	end
 

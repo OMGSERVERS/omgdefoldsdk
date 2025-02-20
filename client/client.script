@@ -2,7 +2,7 @@ local omgplayer = require("omgservers.omgplayer.omgplayer")
 local configuration = require("client.localtesting")
 
 local function handle_event(self, event)
-	print(socket.gettime() .. " [CLIENT] Event was received, event=" .. json.encode(event))
+	print(os.date() .. " [CLIENT] Event was received, event=" .. json.encode(event))
 
 	local event_qualifier = event.qualifier
 	local event_body = event.body
@@ -10,7 +10,7 @@ local function handle_event(self, event)
 	if event_qualifier == omgplayer.constants.SIGNED_UP then
 		local user_id = event_body.user_id
 		local password = event_body.password
-		print(socket.gettime() .. " [CLIENT] User was created, user_id=" .. user_id)
+		print(os.date() .. " [CLIENT] User was created, user_id=" .. user_id)
 
 		self.omginstance:sign_in(user_id, password)
 
@@ -19,31 +19,31 @@ local function handle_event(self, event)
 
 	elseif event_qualifier == omgplayer.constants.SIGNED_IN then
 		local client_id = event_body.client_id
-		print(socket.gettime() .. " [CLIENT] Client was created, client_id=" .. client_id)
+		print(os.date() .. " [CLIENT] Client was created, client_id=" .. client_id)
 
 		self.client_id = client_id
 
 	elseif event_qualifier == omgplayer.constants.GREETED then
 		local version_id = event_body.version_id
 		local version_created = event_body.version_created
-		print(socket.gettime() .. " [CLIENT] Client was greeted, version_id=" .. version_id .. ", version_created=" .. version_created)
+		print(os.date() .. " [CLIENT] Client was greeted, version_id=" .. version_id .. ", version_created=" .. version_created)
 
 	elseif event_qualifier == omgplayer.constants.ASSIGNED then
 		local runtime_qualifier = event_body.runtime_qualifier
 		local runtime_id = event_body.runtime_id
 
-		print(socket.gettime() .. " [CLIENT] Client was assigned, runtime_qualifier=" .. runtime_qualifier .. ", runtime_id=" .. runtime_id)
+		print(os.date() .. " [CLIENT] Client was assigned, runtime_qualifier=" .. runtime_qualifier .. ", runtime_id=" .. runtime_id)
 
 	elseif event_qualifier == omgplayer.constants.MESSAGE_RECEIVED then
 		local message = event_body.message
-		print(socket.gettime() .. " [CLIENT] Message was received, message=" .. message)
+		print(os.date() .. " [CLIENT] Message was received, message=" .. message)
 
 	elseif event_qualifier == omgplayer.constants.CONNECTION_DISPATCHED then
-		print(socket.gettime() .. " [CLIENT] Connection was dispatched")
+		print(os.date() .. " [CLIENT] Connection was dispatched")
 
 	elseif event_qualifier == omgplayer.constants.PLAYER_FAILED then
 		local reason = event_body.reason
-		print(socket.gettime() .. " [CLIENT] Client failed, reason=" .. reason)
+		print(os.date() .. " [CLIENT] Client failed, reason=" .. reason)
 	end
 end
 

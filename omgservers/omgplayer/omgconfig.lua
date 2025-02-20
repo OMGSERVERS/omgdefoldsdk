@@ -52,7 +52,7 @@ omgconfig = {
 		}
 
 		if debug_logging then
-			print(socket.gettime() .. " [OMGPLAYER] Config was created")
+			print(os.date() .. " [OMGPLAYER] Config was created")
 			pprint(instance)
 		end
 		

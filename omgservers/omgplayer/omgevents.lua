@@ -23,7 +23,7 @@ omgevents = {
 			-- Methods
 			add_event = function(instance, event)
 				if trace_logging then
-					print(socket.gettime() .. " [OMGPLAYER] Triggered, event=" .. json.encode(event))
+					print(os.date() .. " [OMGPLAYER] Triggered, event=" .. json.encode(event))
 				end
 				instance.events[#instance.events + 1] = event
 			end,

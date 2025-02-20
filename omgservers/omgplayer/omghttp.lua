@@ -33,7 +33,7 @@ omghttp = {
 					local response_body = response.response
 
 					if trace_logging then
-						print(socket.gettime() .. " [OMGPLAYER] Response, status=" .. response_status .. ", body=" .. response_body)
+						print(os.date() .. " [OMGPLAYER] Response, status=" .. response_status .. ", body=" .. response_body)
 					end
 
 					local decoded_body, decoding_error = instance:decode_response(response_body)
@@ -54,7 +54,7 @@ omghttp = {
 					local response_body = response.response
 
 					if trace_logging then
-						print(socket.gettime() .. " [OMGPLAYER] Response, status=" .. response_status .. ", body=" .. response_body)
+						print(os.date() .. " [OMGPLAYER] Response, status=" .. response_status .. ", body=" .. response_body)
 					end
 
 					local decoded_body, decoding_error = instance:decode_response(response_body)
@@ -92,7 +92,7 @@ omghttp = {
 				local method = "POST"
 
 				if trace_logging then
-					print(socket.gettime() .. " [OMGPLAYER] Request, " .. method .. " " .. url .. ", body=" .. endoded_body)
+					print(os.date() .. " [OMGPLAYER] Request, " .. method .. " " .. url .. ", body=" .. endoded_body)
 				end
 
 				local retriable_handler = instance:build_retriable_handler(url, method, request_headers, endoded_body, response_handler, failure_handler, retries)

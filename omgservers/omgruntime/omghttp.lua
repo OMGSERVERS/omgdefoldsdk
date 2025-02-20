@@ -31,7 +31,7 @@ omghttp = {
 					local response_body = response.response
 
 					if trace_logging then
-						print(socket.gettime() .. " [OMGSERVER] Response, status=" .. response_status .. ", body=" .. response_body)
+						print(os.date() .. " [OMGSERVER] Response, status=" .. response_status .. ", body=" .. response_body)
 					end
 
 					local decoded_body, decoding_error = instance:decode_response(response_body)
@@ -62,7 +62,7 @@ omghttp = {
 				local method = "POST"
 
 				if trace_logging then
-					print(socket.gettime() .. " [OMGSERVER] Request, " .. method .. " " .. url .. ", body=" .. encoded_body)
+					print(os.date() .. " [OMGSERVER] Request, " .. method .. " " .. url .. ", body=" .. encoded_body)
 				end
 				
 				local handler = instance:build_handler(response_handler, failure_handler)

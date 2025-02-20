@@ -58,7 +58,7 @@ omgclient = {
 					local message = response_body.message
 
 					if debug_logging then
-						print(socket.gettime() .. " [OMGPLAYER] Ping response was received, latency=" .. latency)
+						print(os.date() .. " [OMGPLAYER] Ping response was received, latency=" .. latency)
 					end
 
 					instance.ping_latency = latency
@@ -74,7 +74,7 @@ omgclient = {
 						inlined_body = json.encode(decoded_body)
 					end
 
-					print(socket.gettime() .. " [OMGPLAYER] Ping response was failed, response_status=" .. response_status .. ", decoded_body=" .. tostring(inlined_body) .. ", encoding_error=" .. tostring(encoding_error))
+					print(os.date() .. " [OMGPLAYER] Ping response was failed, response_status=" .. response_status .. ", decoded_body=" .. tostring(inlined_body) .. ", encoding_error=" .. tostring(encoding_error))
 				end
 
 				local retries = 0
@@ -95,7 +95,7 @@ omgclient = {
 					instance.user_password = password
 
 					if debug_logging then
-						print(socket.gettime() .. " [OMGPLAYER] User was created, user_id=" .. user_id .. ", password=" .. string.sub(password, 1, 4) .. "..")
+						print(os.date() .. " [OMGPLAYER] User was created, user_id=" .. user_id .. ", password=" .. string.sub(password, 1, 4) .. "..")
 					end
 					
 					if callback then
@@ -121,7 +121,7 @@ omgclient = {
 				instance.user_password = password
 
 				if debug_logging then
-					print(socket.gettime() .. " [OMGPLAYER] User credentials were set, user_id=" .. user_id .. ", password=" .. string.sub(password, 1, 4) .. "..")
+					print(os.date() .. " [OMGPLAYER] User credentials were set, user_id=" .. user_id .. ", password=" .. string.sub(password, 1, 4) .. "..")
 				end
 			end,
 			create_token = function(instance, callback)
@@ -138,7 +138,7 @@ omgclient = {
 					instance.api_token = api_token
 
 					if debug_logging then
-						print(socket.gettime() .. " [OMGPLAYER] Api token was received, token=" .. string.sub(api_token, 1, 4) .. "..")
+						print(os.date() .. " [OMGPLAYER] Api token was received, token=" .. string.sub(api_token, 1, 4) .. "..")
 					end
 					
 					if callback then
@@ -175,7 +175,7 @@ omgclient = {
 					instance.client_messages = omgmessages:create({})
 
 					if debug_logging then
-						print(socket.gettime() .. " [OMGPLAYER] Client was created, client_id=" .. client_id)
+						print(os.date() .. " [OMGPLAYER] Client was created, client_id=" .. client_id)
 					end
 					
 					if callback then

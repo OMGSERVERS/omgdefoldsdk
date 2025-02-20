@@ -88,7 +88,7 @@ omgclient = {
 						local command_body = incoming_command.body
 
 						if debug_logging then
-							print(socket.gettime() .. " [OMGSERVER] Handle command, id=" .. string.format("%.0f", command_id) .. ", qualifier=" .. command_qualifier .. ", body=" .. json.encode(command_body))
+							print(os.date() .. " [OMGSERVER] Handle command, id=" .. string.format("%.0f", command_id) .. ", qualifier=" .. command_qualifier .. ", body=" .. json.encode(command_body))
 						end
 						
 						instance.commands:add_consumed_command(incoming_command)

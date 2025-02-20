@@ -46,7 +46,7 @@ omgprocess = {
 				local message_qualifier = incoming_message.qualifier
 
 				if trace_logging then
-					print(socket.gettime() .. " [OMGPLAYER] Incoming message, incoming_message=" .. json.encode(incoming_message))
+					print(os.date() .. " [OMGPLAYER] Incoming message, incoming_message=" .. json.encode(incoming_message))
 				end
 
 				if message_qualifier == omgconstants.SERVER_WELCOME_MESSAGE then
@@ -133,7 +133,7 @@ omgprocess = {
 							instance.faster_iterations = true
 
 							if debug_logging then
-								print(socket.gettime() .. " [OMGPLAYER] Switched to faster iterations")
+								print(os.date() .. " [OMGPLAYER] Switched to faster iterations")
 							end
 						end
 					else
@@ -144,7 +144,7 @@ omgprocess = {
 							if instance.faster_iterations then
 								instance.faster_iterations = false
 								if debug_logging then
-									print(socket.gettime() .. " [OMGPLAYER] Switched to default iterations")
+									print(os.date() .. " [OMGPLAYER] Switched to default iterations")
 								end
 							end
 						end

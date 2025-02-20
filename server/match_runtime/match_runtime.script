@@ -3,7 +3,7 @@ local omgruntime = require("omgservers.omgruntime.omgruntime")
 local SERVER_EVENT_HASH = hash("server_event")
 
 local function handle_started(self)
-	print(socket.gettime() .. " [MATCH] Match was started")
+	print(os.date() .. " [MATCH] Match was started")
 end
 
 -- https://github.com/OMGSERVERS/omgservers/blob/main/.techdocs/runtime_commands.md
@@ -11,7 +11,7 @@ local function handle_command(self, command_qualifier, command_body)
 	if command_qualifier == omgruntime.constants.INIT_RUNTIME then
 		local runtime_config = command_body.runtime_config
 		local version_config = runtime_config.version_config
-		print(socket.gettime() .. " [MATCH] Runtime was initialized:")
+		print(os.date() .. " [MATCH] Runtime was initialized:")
 		pprint(version_config)
 		
 	elseif command_qualifier == omgruntime.constants.ADD_MATCH_CLIENT then
@@ -19,20 +19,20 @@ local function handle_command(self, command_qualifier, command_body)
 		local client_id = command_body.client_id
 		local group_name = command_body.group_name
 		local profile = command_body.profile
-		print(socket.gettime() .. " [MATCH] Client " .. client_id .. " of user " .. user_id .. " was added to the group " .. group_name)
-		print(socket.gettime() .. " [MATCH] Profile:")
+		print(os.date() .. " [MATCH] Client " .. client_id .. " of user " .. user_id .. " was added to the group " .. group_name)
+		print(os.date() .. " [MATCH] Profile:")
 		pprint(profile)
 
 		omgruntime:upgrade_connection(client_id)
 		
 	elseif command_qualifier == omgruntime.constants.DELETE_CLIENT then
 		local client_id = command_body.client_id
-		print(socket.gettime() .. " [MATCH] Client " .. client_id .. " was deleted")
+		print(os.date() .. " [MATCH] Client " .. client_id .. " was deleted")
 		
 	elseif command_qualifier == omgruntime.constants.HANDLE_MESSAGE then
 		local client_id = command_body.client_id
 		local message = command_body.message
-		print(socket.gettime() .. " [MATCH] Message from client " .. tostring(client_id) .. " was received:")
+		print(os.date() .. " [MATCH] Message from client " .. tostring(client_id) .. " was received:")
 		pprint(message)
 
 	else
@@ -41,7 +41,7 @@ local function handle_command(self, command_qualifier, command_body)
 end
 
 local function handle_message(self, client_id, message)
-	print(socket.gettime() .. " [MATCH] Message was received, client_id=" .. client_id .. ", message=" .. message)
+	print(os.date() .. " [MATCH] Message was received, client_id=" .. client_id .. ", message=" .. message)
 
 	local broadcast_message = client_id .. "/" .. message
 	omgruntime:broadcast_binary_message(broadcast_message)
