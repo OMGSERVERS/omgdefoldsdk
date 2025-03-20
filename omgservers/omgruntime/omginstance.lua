@@ -22,6 +22,8 @@ omginstance = {
 
 		self.config = omgconfig:create(options)
 		self:reset()
+		
+		return self.config.runtime_qualifier
 	end,
 	reset = function(self)
 		assert(self, "The self must not be nil.")
@@ -52,18 +54,24 @@ omginstance = {
 
 		self.started = false
 	end,
-	start = function(self)
+	start = function(self, dispatched)
 		assert(self, "The self must not be nil.")
 		assert(self.config, "The server must be initialized.")
 		assert(not self.started, "The server already started")
+
+		local callback = function()
+			self.started = true
+
+			local runtime_qualifier = self.config.runtime_qualifier
+			self.events:server_started(runtime_qualifier)
+		end
 		
 		self.client:create_token(function(api_token, ws_token)
-			self.dispatcher:connect(ws_token, function()
-				self.started = true
-				
-				local runtime_qualifier = self.config.runtime_qualifier
-				self.events:server_started(runtime_qualifier)
-			end)
+			if dispatched or false then
+				self.dispatcher:connect(ws_token, callback)
+			else
+				callback()
+			end
 		end)
 	end,
 	update = function(self, dt)

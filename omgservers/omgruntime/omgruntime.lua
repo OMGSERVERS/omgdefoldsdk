@@ -6,10 +6,10 @@ omgruntime = {
 	constants = omgconstants,
 	-- Methods
 	init = function(self, options)
-		omginstance:init(options)
+		return omginstance:init(options)
 	end,
-	start = function(self)
-		omginstance:start()
+	start = function(self, dispatched)
+		omginstance:start(dispatched)
 	end,
 	update = function(self, dt)
 		omginstance:update(dt)
