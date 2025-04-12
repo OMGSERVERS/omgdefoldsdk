@@ -1,5 +1,5 @@
 local omgconstants = require("omgservers.omgruntime.omgconstants")
-local omgcommands = require("omgservers.omgruntime.omgcommands")
+local omgmessages = require("omgservers.omgruntime.omgmessages")
 local omgsystem = require("omgservers.omgruntime.omgsystem")
 
 local omgclient
@@ -12,12 +12,10 @@ omgclient = {
 		},
 	]]--
 	create = function(self, options)
-		assert(self, "The self must not be nil.")
-		assert(options, "The options must not be nil.")
-		assert(options.config, "The value config must not be nil.")
-		assert(options.config.type == "omgconfig", "The type of config must be omgconfig")
-		assert(options.http, "The value http must not be nil.")
-		assert(options.http.type == "omghttp", "The type of http must be omghttp")
+		assert(self, "Self must not be nil.")
+		assert(options, "Options must not be nil.")
+		assert(options.config, "Config must not be nil.")
+		assert(options.http, "Http must not be nil.")
 
 		local config = options.config
 
@@ -30,13 +28,13 @@ omgclient = {
 		local http = options.http
 
 		local create_token_url = service_url .. "/service/v1/entrypoint/runtime/request/create-token"
-		local interchange_url = service_url .. "/service/v1/entrypoint/runtime/request/interchange"
+		local interchange_messages_url = service_url .. "/service/v1/entrypoint/runtime/request/interchange-messages"
 		
 		return {
 			type = "omgclient",
 			api_token = nil,
-			ws_token = nil,
-			commands = nil,
+			dispatcher_url = nil,
+			messages = nil,
 			-- Methods
 			create_token = function(instance, callback)
 				local request_url = create_token_url
@@ -47,14 +45,14 @@ omgclient = {
 
 				local response_handler = function(response_status, response_body)
 					local api_token = response_body.api_token
-					local ws_token = response_body.ws_token
+					local dispatcher_url = response_body.dispatcher_url
 
 					instance.api_token = api_token
-					instance.ws_token = ws_token
-					instance.commands = omgcommands:create({})
+					instance.dispatcher_url = dispatcher_url
+					instance.messages = omgmessages:create({})
 					
 					if callback then
-						callback(api_token, ws_token)
+						callback(api_token, dispatcher_url)
 					end
 				end
 
@@ -64,38 +62,38 @@ omgclient = {
 						inlined_body = json.encode(decoded_body)
 					end
 
-					omgsystem:terminate_server(omgconstants.API_EXIT_CODE, "token was not created, response_status=" .. response_status .. ", decoded_body=" .. inlined_body .. ", decoding_error=" .. tostring(decoding_error))
+					omgsystem:terminate_server(omgconstants.exit_codes.API, "failed to create token, response_status=" .. response_status .. ", decoded_body=" .. inlined_body .. ", decoding_error=" .. tostring(decoding_error))
 				end
 
 				local api_token = nil
 				http:request_server(request_url, request_body, response_handler, failure_handler, api_token)
 			end,
 			interchange = function(instance, callback)
-				assert(instance.api_token and instance.commands, "The client must be fully fledged.")
+				assert(instance.api_token and instance.messages, "Client must be fully fledged.")
 				
-				local request_url = interchange_url
+				local request_url = interchange_messages_url
 				local request_body = {
-					outgoing_commands = instance.commands:pull_outgoing_commands(),
-					consumed_commands = instance.commands:pull_consumed_commands(),
+					outgoing_messages = instance.messages:pull_outgoing_messages(),
+					consumed_messages = instance.messages:pull_consumed_messages(),
 				}
 
 				local response_handler = function(response_status, response_body)
-					local incoming_commands = response_body.incoming_commands
+					local incoming_messages = response_body.incoming_messages
 
-					for _, incoming_command in ipairs(incoming_commands) do
-						local command_id = incoming_command.id
-						local command_qualifier = incoming_command.qualifier
-						local command_body = incoming_command.body
+					for _, incoming_message in ipairs(incoming_messages) do
+						local message_id = incoming_message.id
+						local message_qualifier = incoming_message.qualifier
+						local message_body = incoming_message.body
 
 						if debug_logging then
-							print(os.date() .. " [OMGSERVER] Handle command, id=" .. string.format("%.0f", command_id) .. ", qualifier=" .. command_qualifier .. ", body=" .. json.encode(command_body))
+							print(os.date() .. " [OMGSERVER] Handle message, id=" .. string.format("%.0f", message_id) .. ", qualifier=" .. message_qualifier .. ", body=" .. json.encode(message_body))
 						end
 						
-						instance.commands:add_consumed_command(incoming_command)
+						instance.messages:add_consumed_message(incoming_message)
 					end
 					
 					if callback then
-						callback(incoming_commands)
+						callback(incoming_messages)
 					end
 				end
 
@@ -105,121 +103,107 @@ omgclient = {
 						inlined_body = json.encode(decoded_body)
 					end
 
-					omgsystem:terminate_server(omgconstants.API_EXIT_CODE, "interchange failed, response_status=" .. response_status .. ", decoded_body=" .. inlined_body .. ", decoding_error=" .. tostring(decoding_error))
+					omgsystem:terminate_server(omgconstants.exit_codes.API, "failed to interchange, response_status=" .. tostring(response_status) .. ", decoded_body=" .. tostring(inlined_body) .. ", decoding_error=" .. tostring(decoding_error))
 				end
 
 				local api_token = instance.api_token
 				http:request_server(request_url, request_body, response_handler, failure_handler, api_token)
 			end,
 			fully_fledged = function(instance)
-				return instance.api_token and instance.commands
-			end,
-			set_attributes = function(instance, client_id, attributes)
-				assert(instance.commands, "The client must be fully fledged.")
-				
-				local command = {
-					qualifier = omgconstants.SET_ATTRIBUTES,
-					body = {
-						client_id = client_id,
-						attributes = {
-							attributes = attributes,
-						},
-					},
-				}
-				instance.commands:add_outgoing_command(command)
+				return instance.api_token and instance.messages
 			end,
 			set_profile = function(instance, client_id, profile)
-				assert(instance.commands, "The client must be fully fledged.")
+				assert(instance.messages, "Client must be fully fledged.")
 				
-				local command = {
-					qualifier = omgconstants.SET_PROFILE,
+				local outgoing_message = {
+					qualifier = omgconstants.messages.SET_PROFILE,
 					body = {
 						client_id = client_id,
 						profile = profile,
 					},
 				}
-				instance.commands:add_outgoing_command(command)
+				instance.messages:add_outgoing_message(outgoing_message)
 			end,
 			respond_client = function(instance, client_id, message)
-				assert(instance.commands, "The client must be fully fledged.")
+				assert(instance.messages, "Client must be fully fledged.")
 				
-				local command = {
-					qualifier = omgconstants.RESPOND_CLIENT,
+				local outgoing_message = {
+					qualifier = omgconstants.messages.RESPOND_CLIENT,
 					body = {
 						client_id = client_id,
 						message = message,
 					},
 				}
-				instance.commands:add_outgoing_command(command)
+				instance.messages:add_outgoing_message(outgoing_message)
 			end,
 			multicast_message = function(instance, clients, message)
-				assert(instance.commands, "The client must be fully fledged.")
+				assert(instance.messages, "Client must be fully fledged.")
 				
-				local command = {
-					qualifier = omgconstants.MULTICAST_MESSAGE,
+				local outgoing_message = {
+					qualifier = omgconstants.messages.MULTICAST_MESSAGE,
 					body = {
 						clients = clients,
 						message = message,
 					},
 				}
-				instance.commands:add_outgoing_command(command)
+				instance.messages:add_outgoing_message(outgoing_message)
 			end,
 			broadcast_message = function(instance, message)
-				assert(instance.commands, "The client must be fully fledged.")
+				assert(instance.messages, "Client must be fully fledged.")
 				
-				local command = {
-					qualifier = omgconstants.BROADCAST_MESSAGE,
+				local outgoing_message = {
+					qualifier = omgconstants.messages.BROADCAST_MESSAGE,
 					body = {
 						message = message,
 					},
 				}
-				instance.commands:add_outgoing_command(command)
+				instance.messages:add_outgoing_message(outgoing_message)
 			end,
 			kick_client = function(instance, client_id)
-				assert(instance.commands, "The client must be fully fledged.")
+				assert(instance.messages, "Client must be fully fledged.")
 				
-				local command = {
-					qualifier = omgconstants.KICK_CLIENT,
+				local outgoing_message = {
+					qualifier = omgconstants.messages.KICK_CLIENT,
 					body = {
 						client_id = client_id,
 					},
 				}
-				instance.commands:add_outgoing_command(command)
+				instance.messages:add_outgoing_message(outgoing_message)
 			end,
 			request_matchmaking = function(instance, client_id, mode)
-				assert(instance.commands, "The client must be fully fledged.")
+				assert(instance.messages, "Client must be fully fledged.")
 				
-				local command = {
-					qualifier = omgconstants.REQUEST_MATCHMAKING,
+				local outgoing_message = {
+					qualifier = omgconstants.messages.REQUEST_MATCHMAKING,
 					body = {
 						client_id = client_id,
 						mode = mode,
 					},
 				}
-				instance.commands:add_outgoing_command(command)
+				instance.messages:add_outgoing_message(outgoing_message)
 			end,
 			stop_matchmaking = function(instance)
-				assert(instance.commands, "The client must be fully fledged.")
+				assert(instance.messages, "Client must be fully fledged.")
 				
-				local command = {
-					qualifier = omgconstants.STOP_MATCHMAKING,
+				local outgoing_message = {
+					qualifier = omgconstants.messages.STOP_MATCHMAKING,
 					body = {
 						__object = true
 					},
 				}
-				instance.commands:add_outgoing_command(command)
+				instance.messages:add_outgoing_message(outgoing_message)
 			end,
 			upgrade_connection = function(instance, client_id)
-				assert(instance.commands, "The client must be fully fledged.")
+				assert(instance.messages, "Client must be fully fledged.")
 				
-				local command = {
-					qualifier = omgconstants.UPGRADE_CONNECTION,
+				local outgoing_message = {
+					qualifier = omgconstants.messages.UPGRADE_CONNECTION,
 					body = {
 						client_id = client_id,
-						protocol = omgconstants.DISPATCHER_PROTOCOL,
+						protocol = omgconstants.protocols.DISPATCHER,
 					},
 				}
-				instance.commands:add_outgoing_command(command)
+				instance.messages:add_outgoing_message(outgoing_message)
 			end,
 		}
 	end

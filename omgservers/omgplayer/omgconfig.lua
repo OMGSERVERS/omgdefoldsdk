@@ -18,12 +18,12 @@ omgconfig = {
 		},
 	]]--
 	create = function(self, options)
-		assert(self, "The self must not be nil.")
-		assert(options, "The options must not be nil.")
-		assert(options.tenant, "The value tenant must not be nil.")
-		assert(options.project, "The value project must not be nil.")
-		assert(options.stage, "The value stage must not be nil.")
-		assert(options.event_handler, "The value event_handler must not be null.")
+		assert(self, "Self must not be nil.")
+		assert(options, "Options must not be nil.")
+		assert(options.tenant, "Tenant must not be nil.")
+		assert(options.project, "Project must not be nil.")
+		assert(options.stage, "Stage must not be nil.")
+		assert(options.event_handler, "Event handler must not be null.")
 
 		local service_url = options.service_url or "https://demoserver.omgservers.com"
 		local debug_logging = options.debug_logging or false
@@ -32,10 +32,10 @@ omgconfig = {
 		local faster_interval = options.faster_interval or 0.5
 		local iterations_threshold = options.iterations_threshold or 4
 
-		assert(default_interval > 0, "The default interval must be greater than zero.")
-		assert(faster_interval > 0, "The faster interval must be greater than zero.")
-		assert(iterations_threshold > 0, "The iteration threshold must be greater than zero.")
-		assert(faster_interval < default_interval, "The faster interval must be less than the default.")
+		assert(default_interval > 0, "Default interval must be greater than zero.")
+		assert(faster_interval > 0, "Faster interval must be greater than zero.")
+		assert(iterations_threshold > 0, "Iteration threshold must be greater than zero.")
+		assert(faster_interval < default_interval, "Faster interval must be less than the default.")
 		
 		local instance = {
 			type = "omgconfig",
@@ -52,7 +52,7 @@ omgconfig = {
 		}
 
 		if debug_logging then
-			print(os.date() .. " [OMGPLAYER] Config was created")
+			print(os.date() .. " [OMGPLAYER] Config created")
 			pprint(instance)
 		end
 		

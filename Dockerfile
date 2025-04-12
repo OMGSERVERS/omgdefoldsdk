@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 openjdk:21-jdk-bullseye AS builder
+FROM --platform=linux/amd64 openjdk:21-jdk-bookworm AS builder
 
 # Install dependencies
 # https://forum.defold.com/t/spine-4-1/72923/2

@@ -13,18 +13,13 @@ omgprocess = {
 		},
 	]]--
 	create = function(self, options)
-		assert(self, "The self must not be nil.")
-		assert(options, "The options must not be nil.")
-		assert(options.config, "The value config must not be nil.")
-		assert(options.config.type == "omgconfig", "The type of config must be omgconfig")
-		assert(options.events, "The value events must not be nil.")
-		assert(options.events.type == "omgevents", "The type of events must be omgevents")
-		assert(options.state, "The value state must not be nil.")
-		assert(options.state.type == "omgstate", "The type of state must be omgstate")
-		assert(options.client, "The value client must not be nil.")
-		assert(options.client.type == "omgclient", "The type of client must be omgclient")
-		assert(options.dispatcher, "The value dispatcher must not be nil.")
-		assert(options.dispatcher.type == "omgdispatcher", "The type of dispatcher must be omgdispatcher")
+		assert(self, "Self must not be nil.")
+		assert(options, "Options must not be nil.")
+		assert(options.config, "Config must not be nil.")
+		assert(options.events, "Events must not be nil.")
+		assert(options.state, "State must not be nil.")
+		assert(options.client, "Client must not be nil.")
+		assert(options.dispatcher, "Dispatcher must not be nil.")
 
 		local debug_logging = options.config.debug_logging
 		local trace_logging = options.config.trace_logging
@@ -46,55 +41,51 @@ omgprocess = {
 				local message_qualifier = incoming_message.qualifier
 
 				if trace_logging then
-					print(os.date() .. " [OMGPLAYER] Incoming message, incoming_message=" .. json.encode(incoming_message))
+					print(os.date() .. " [OMGPLAYER] Incoming message, " .. json.encode(incoming_message))
 				end
 
-				if message_qualifier == omgconstants.SERVER_WELCOME_MESSAGE then
+				if message_qualifier == omgconstants.messages.CLIENT_GREETED then
 					local version_id = incoming_message.body.version_id
 					local version_created = incoming_message.body.version_created
-					state:welcome(version_id, version_created)
+					state:set_version(version_id, version_created)
 
-				elseif message_qualifier == omgconstants.MATCHMAKER_ASSIGNMENT_MESSAGE then
-					local matchmaker_id = incoming_message.body.matchmaker_id
-					state:assign_matchmaker(matchmaker_id)
-
-				elseif message_qualifier == omgconstants.RUNTIME_ASSIGNMENT_MESSAGE then
+				elseif message_qualifier == omgconstants.messages.RUNTIME_ASSIGNED then
 					local runtime_id = incoming_message.body.runtime_id
 					local runtime_qualifier = incoming_message.body.runtime_qualifier
 
 					-- Close the dispatcher connection if it exists.
 					dispatcher:disconnect()
 					
-					if runtime_qualifier == omgconstants.LOBBY then
+					if runtime_qualifier == omgconstants.runtimes.LOBBY then
 						state:assign_lobby(runtime_id)
 
-					elseif runtime_qualifier == omgconstants.MATCH then
+					elseif runtime_qualifier == omgconstants.runtimes.MATCH then
 						state:assign_match(runtime_id)
 
 					else
-						state:fail("an unknown runtime qualifier was assigned, runtime_qualifier=" .. runtime_qualifier)
+						state:fail("unknown runtime assigned, " .. runtime_qualifier)
 					end
 
-				elseif message_qualifier == omgconstants.SERVER_OUTGOING_MESSAGE then
+				elseif message_qualifier == omgconstants.messages.MESSAGE_PRODUCED then
 					local message_body = incoming_message.body.message
 					events:message_received(message_body)
 
-				elseif message_qualifier == omgconstants.CONNECTION_UPGRADE_MESSAGE then
+				elseif message_qualifier == omgconstants.messages.CONNECTION_UPGRADED then
 					local upgrade_protocol = incoming_message.body.protocol
-					if upgrade_protocol == omgconstants.DISPATCHER_PROTOCOL then
-						local web_socket_config = incoming_message.body.web_socket_config
-						local ws_token = web_socket_config.ws_token
+					if upgrade_protocol == omgconstants.protocols.DISPATCHER then
+						local dispatcher_config = incoming_message.body.dispatcher_config
+						local connection_url = dispatcher_config.connection_url
 
-						dispatcher:connect(ws_token, function()
+						dispatcher:connect(connection_url, function()
 							events:connection_dispatched()
 						end)
 					else
-						state:fail("unsupported connection upgrade protocol, protocol=" .. upgrade_protocol)
+						state:fail("unsupported protocol, " .. upgrade_protocol)
 					end
 					
-				elseif message_qualifier == omgconstants.DISCONNECTION_REASON_MESSAGE then
+				elseif message_qualifier == omgconstants.messages.CLIENT_DELETED then
 					local reason = incoming_message.body.reason
-					state:fail("client was disconnected by the server, reason=" .. reason)
+					state:fail("client deleted, reason=" .. reason)
 					
 				end
 			end,

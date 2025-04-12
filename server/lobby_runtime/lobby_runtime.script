@@ -3,42 +3,40 @@ local omgruntime = require("omgservers.omgruntime.omgruntime")
 local SERVER_EVENT_HASH = hash("server_event")
 
 local function handle_started(self)
-	print(os.date() .. " [MATCH] Lobby was started")
+	print(os.date() .. " [LOBBY_RUNTIME] Lobby started")
 end
 
-local function handle_command(self, command_qualifier, command_body)
-	if command_qualifier == omgruntime.constants.INIT_RUNTIME then
-		local runtime_config = command_body.runtime_config
-		local version_config = runtime_config.version_config
-		print(os.date() .. " [MATCH] Runtime was initialized:")
-		pprint(version_config)
+local function handle_message(self, message_qualifier, message_body)
+	print(os.date() .. " [LOBBY_RUNTIME] Message received, qualifier=" .. tostring(message_qualifier))
 
-	elseif command_qualifier == omgruntime.constants.ADD_CLIENT then
-		local user_id = command_body.user_id
-		local client_id = command_body.client_id
-		local profile = command_body.profile
-		print(os.date() .. " [MATCH] Client " .. client_id .. " of user " .. user_id .. " was added")
-		print(os.date() .. " [MATCH] Profile:")
+	if message_qualifier == omgruntime.constants.messages.RUNTIME_CREATED then
+		local runtime_config = message_body.runtime_config
+		print(os.date() .. " [LOBBY_RUNTIME] Runtime initialized:")
+		pprint(runtime_config.lobby)
+		pprint(runtime_config.version)
+
+	elseif message_qualifier == omgruntime.constants.messages.CLIENT_ASSIGNED then
+		local user_id = message_body.user_id
+		local client_id = message_body.client_id
+		local profile = message_body.profile
+		print(os.date() .. " [LOBBY_RUNTIME] Client " .. client_id .. " of user " .. user_id .. " assigned")
+		print(os.date() .. " [LOBBY_RUNTIME] Profile:")
 		pprint(profile)
 
 		omgruntime:request_matchmaking(client_id, "game")
 
-	elseif command_qualifier == omgruntime.constants.DELETE_CLIENT then
-		local client_id = command_body.client_id
-		print(os.date() .. " [MATCH] Client " .. client_id .. " was deleted")
+	elseif message_qualifier == omgruntime.constants.messages.CLIENT_REMOVED then
+		local client_id = message_body.client_id
+		print(os.date() .. " [LOBBY_RUNTIME] Client " .. client_id .. " removed")
 
-	elseif command_qualifier == omgruntime.constants.HANDLE_MESSAGE then
-		local client_id = command_body.client_id
-		local message = command_body.message
-		print(os.date() .. " [MATCH] Message from client " .. tostring(client_id) .. " was received:")
+	elseif message_qualifier == omgruntime.constants.messages.MESSAGE_RECEIVED then
+		local client_id = message_body.client_id
+		local message = message_body.message
+		print(os.date() .. " [LOBBY_RUNTIME] Message from client " .. tostring(client_id) .. " received:")
 		pprint(message)
 	else
-		print("[LOBBY_MANAGER] Unsupported command was received, command_qualifier=" .. tostring(command_qualifier))
+		print(os.date() .. " [LOBBY_RUNTIME] Unsupported message received, qualifier=" .. tostring(message_qualifier))
 	end
-end
-
-local function handle_message(self, client_id, message)
-	print(os.date() .. " [MATCH] Message was received, client_id=" .. client_id .. ", message=" .. message)
 end
 
 function on_message(self, message_id, message, sender)
@@ -47,19 +45,15 @@ function on_message(self, message_id, message, sender)
 		local event_qualifier = event.qualifier
 		local event_body = event.body
 
-		if event_qualifier == omgruntime.constants.SERVER_STARTED then
+		if event_qualifier == omgruntime.constants.events.SERVER_STARTED then
 			handle_started(self)
-		elseif event_qualifier == omgruntime.constants.COMMAND_RECEIVED then
-			local command_qualifier = event_body.qualifier
-			local command_body = event_body.body
-			handle_command(self, command_qualifier, command_body)
 
-		elseif event_qualifier == omgruntime.constants.MESSAGE_RECEIVED then
-			local client_id = event_body.client_id
-			local message = event_body.message
-			handle_message(self, client_id, message)
+		elseif event_qualifier == omgruntime.constants.events.MESSAGE_RECEIVED then
+			local message_qualifier = event_body.qualifier
+			local message_body = event_body.body
+			handle_message(self, message_qualifier, message_body)
 		else
-			print("[LOBBY_MANAGER] Unsupported event was received, event_qualifier=" .. tostring(event_qualifier))
+			print("[LOBBY_RUNTIME] Unsupported event received, qualifier=" .. tostring(event_qualifier))
 		end
 	end
 end

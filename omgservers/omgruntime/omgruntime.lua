@@ -15,9 +15,6 @@ omgruntime = {
 		omginstance:update(dt)
 	end,
 	-- Commands
-	set_attributes = function(self, client_id, attributes)
-		omginstance:set_attributes(client_id, attributes)
-	end,
 	set_profile = function(self, client_id, profile)
 		omginstance:set_profile(client_id, profile)
 	end,

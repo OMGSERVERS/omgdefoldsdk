@@ -9,10 +9,9 @@ omgevents = {
 		},
 	]]--
 	create = function(self, options)
-		assert(self, "The self must not be nil.")
-		assert(options, "The options must not be nil.")
-		assert(options.config, "The value config must not be nil.")
-		assert(options.config.type == "omgconfig", "The type of config must be omgconfig")
+		assert(self, "Self must not be nil.")
+		assert(options, "Options must not be nil.")
+		assert(options.config, "Config must not be nil.")
 
 		local trace_logging = options.config.trace_logging
 		local event_handler = options.config.event_handler
@@ -29,7 +28,7 @@ omgevents = {
 			end,
 			service_pinged = function(instance, latency, message)
 				local event = {
-					qualifier = omgconstants.SERVICE_PINGED,
+					qualifier = omgconstants.events.SERVICE_PINGED,
 					body = {
 						latency = latency,
 						message = message,
@@ -39,7 +38,7 @@ omgevents = {
 			end,
 			signed_up = function(instance, user_id, password)
 				local event = {
-					qualifier = omgconstants.SIGNED_UP,
+					qualifier = omgconstants.events.SIGNED_UP,
 					body = {
 						user_id = user_id,
 						password = password,
@@ -49,16 +48,16 @@ omgevents = {
 			end,
 			signed_in = function(instance, client_id)
 				local event = {
-					qualifier = omgconstants.SIGNED_IN,
+					qualifier = omgconstants.events.SIGNED_IN,
 					body = {
 						client_id = client_id,
 					},
 				}
 				instance:add_event(event)
 			end,
-			greeted = function(instance, version_id, version_created)
+			player_greeted = function(instance, version_id, version_created)
 				local event = {
-					qualifier = omgconstants.GREETED,
+					qualifier = omgconstants.events.PLAYER_GREETED,
 					body = {
 						version_id = version_id,
 						version_created = version_created,
@@ -66,9 +65,9 @@ omgevents = {
 				}
 				instance:add_event(event)
 			end,
-			assigned = function(instance, runtime_qualifier, runtime_id)
+			runtime_assigned = function(instance, runtime_qualifier, runtime_id)
 				local event = {
-					qualifier = omgconstants.ASSIGNED,
+					qualifier = omgconstants.events.RUNTIME_ASSIGNED,
 					body = {
 						runtime_qualifier = runtime_qualifier,
 						runtime_id = runtime_id,
@@ -78,7 +77,7 @@ omgevents = {
 			end,
 			message_received = function(instance, message_body)
 				local event = {
-					qualifier = omgconstants.MESSAGE_RECEIVED,
+					qualifier = omgconstants.events.MESSAGE_RECEIVED,
 					body = {
 						message = message_body,
 					}
@@ -87,15 +86,15 @@ omgevents = {
 			end,
 			connection_dispatched = function(instance)
 				local event = {
-					qualifier = omgconstants.CONNECTION_DISPATCHED,
+					qualifier = omgconstants.events.CONNECTION_DISPATCHED,
 					body = {
 					},
 				}
 				instance:add_event(event)
 			end,
-			failed = function(instance, reason)
+			player_failed = function(instance, reason)
 				local event = {
-					qualifier = omgconstants.PLAYER_FAILED,
+					qualifier = omgconstants.events.PLAYER_FAILED,
 					body = {
 						reason = reason,
 					},

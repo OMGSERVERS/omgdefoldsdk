@@ -7,14 +7,11 @@ omghttp = {
 		},
 	]]--
 	create = function(self, options)
-		assert(self, "The self must not be nil.")
-		assert(options, "The options must not be nil.")
-		assert(options.config, "The value config must not be nil.")
-		assert(options.config.type == "omgconfig", "The type of config must be omgconfig")
+		assert(self, "Self must not be nil.")
+		assert(options, "Options must not be nil.")
+		assert(options.config, "Config must not be nil.")
 
 		local trace_logging = options.config.trace_logging
-
-		local state = options.state
 		
 		return {
 			type = "omghttp",

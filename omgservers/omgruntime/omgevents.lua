@@ -9,10 +9,9 @@ omgevents = {
 	},
 	]]--
 	create = function(self, options)
-		assert(self, "The self must not be nil.")
-		assert(options, "The options must not be nil.")
-		assert(options.config, "The value config must not be nil.")
-		assert(options.config.type == "omgconfig", "The type of config must be omgconfig")
+		assert(self, "Self must not be nil.")
+		assert(options, "Options must not be nil.")
+		assert(options.config, "Config must not be nil.")
 
 		local trace_logging = options.config.trace_logging
 		local event_handler = options.config.event_handler
@@ -29,29 +28,19 @@ omgevents = {
 			end,
 			server_started = function(instance, runtime_qualifier)
 				local event = {
-					qualifier = omgconstants.SERVER_STARTED,
+					qualifier = omgconstants.events.SERVER_STARTED,
 					body = {
 						runtime_qualifier = runtime_qualifier,
 					},
 				}
 				instance:add_event(event)
 			end,
-			message_received = function(instance, client_id, message)
+			message_received = function(instance, message_qualifier, message_body)
 				local event = {
-					qualifier = omgconstants.MESSAGE_RECEIVED,
+					qualifier = omgconstants.events.MESSAGE_RECEIVED,
 					body = {
-						client_id = client_id,
-						message = message,
-					},
-				}
-				instance:add_event(event)
-			end,
-			command_received = function(instance, qualifier, body)
-				local event = {
-					qualifier = omgconstants.COMMAND_RECEIVED,
-					body = {
-						qualifier = qualifier,
-						body = body
+						qualifier = message_qualifier,
+						body = message_body,
 					},
 				}
 				instance:add_event(event)

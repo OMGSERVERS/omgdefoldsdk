@@ -9,14 +9,11 @@ omgprocess = {
 	},
 	]]--
 	create = function(self, options)
-		assert(self, "The self must not be nil.")
-		assert(options, "The options must not be nil.")
-		assert(options.config, "The value config must not be nil.")
-		assert(options.config.type == "omgconfig", "The type of config must be omgconfig")
-		assert(options.events, "The value events must not be nil.")
-		assert(options.events.type == "omgevents", "The type of events must be omgevents")
-		assert(options.client, "The value client must not be nil.")
-		assert(options.client.type == "omgclient", "The type of client must be omgclient")
+		assert(self, "Self must not be nil.")
+		assert(options, "Options must not be nil.")
+		assert(options.config, "Config must not be nil.")
+		assert(options.events, "Events must not be nil.")
+		assert(options.client, "Client must not be nil.")
 
 		local debug_logging = options.config.debug_logging
 
@@ -50,11 +47,11 @@ omgprocess = {
 
 					if not instance.interchange_requested then
 						instance.interchange_requested = true
-						client:interchange(function(incoming_commands)
+						client:interchange(function(incoming_messages)
 							instance.interchange_requested = false
 
 							-- Switch between default and faster intervals
-							if #incoming_commands > 0 then
+							if #incoming_messages > 0 then
 								instance.empty_iterations = 0
 								if not instance.faster_iterations then
 									instance.faster_iterations = true
@@ -77,10 +74,10 @@ omgprocess = {
 								end
 							end
 
-							for _, incoming_command in ipairs(incoming_commands) do
-								local command_qualifier = incoming_command.qualifier
-								local command_body = incoming_command.body
-								events:command_received(command_qualifier, command_body)
+							for _, incoming_message in ipairs(incoming_messages) do
+								local message_qualifier = incoming_message.qualifier
+								local message_body = incoming_message.body
+								events:message_received(message_qualifier, message_body)
 							end
 						 end)
 					end
