@@ -6,6 +6,7 @@ omgconstants = {
 		MATCH = "MATCH",
 	},
 	messages = {
+		-- Service -> Client
 		CLIENT_GREETED = "CLIENT_GREETED",
 		RUNTIME_ASSIGNED = "RUNTIME_ASSIGNED",
 		CONNECTION_UPGRADED = "CONNECTION_UPGRADED",

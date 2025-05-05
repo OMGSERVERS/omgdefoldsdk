@@ -1,0 +1,114 @@
+local omgruntime = require("omgservers.omgruntime.omgruntime")
+
+local function handle_lobby_message(self, message_qualifier, message_body)
+	if message_qualifier == omgruntime.constants.messages.RUNTIME_CREATED then
+		local runtime_config = message_body.runtime_config
+
+		print(os.date() .. " [SERVER] Runtime created:")
+		pprint(runtime_config.lobby)
+		pprint(runtime_config.version)
+
+	elseif message_qualifier == omgruntime.constants.messages.CLIENT_ASSIGNED then
+		local user_id = message_body.user_id
+		local client_id = message_body.client_id
+		local profile = message_body.profile
+		print(os.date() .. " [SERVER] Client " .. client_id .. " of user " .. user_id .. " assigned")
+		print(os.date() .. " [SERVER] Profile:")
+		pprint(profile)
+
+		self.omginstance:request_matchmaking(client_id, "game")
+
+	elseif message_qualifier == omgruntime.constants.messages.CLIENT_REMOVED then
+		local client_id = message_body.client_id
+		print(os.date() .. " [SERVER] Client " .. client_id .. " removed")
+
+	elseif message_qualifier == omgruntime.constants.messages.MESSAGE_RECEIVED then
+		local client_id = message_body.client_id
+		local message = message_body.message
+		print(os.date() .. " [SERVER] Message from client " .. tostring(client_id) .. " received:")
+		pprint(message)
+	else
+		print(os.date() .. " [SERVER] Unsupported message received, qualifier=" .. tostring(message_qualifier))
+	end
+end
+
+local function handle_match_message(self, message_qualifier, message_body)
+	if message_qualifier == omgruntime.constants.messages.RUNTIME_CREATED then
+		local runtime_config = message_body.runtime_config
+		print(os.date() .. " [SERVER] Runtime initialized:")
+		pprint(runtime_config.lobby)
+		pprint(runtime_config.version)
+
+	elseif message_qualifier == omgruntime.constants.messages.CLIENT_ASSIGNED then
+		local user_id = message_body.user_id
+		local client_id = message_body.client_id
+		local group_name = message_body.group_name
+		local profile = message_body.profile
+		print(os.date() .. " [SERVER] Client " .. client_id .. " of user " .. user_id .. " added to the group " .. group_name)
+		print(os.date() .. " [SERVER] Profile:")
+		pprint(profile)
+
+		self.omginstance:upgrade_connection(client_id)
+
+	elseif message_qualifier == omgruntime.constants.messages.CLIENT_REMOVED then
+		local client_id = message_body.client_id
+		print(os.date() .. " [SERVER] Client " .. client_id .. " removed")
+
+	elseif message_qualifier == omgruntime.constants.messages.MESSAGE_RECEIVED then
+		local client_id = message_body.client_id
+		local message = message_body.message
+		print(os.date() .. " [SERVER] Message from client " .. tostring(client_id) .. " received:")
+		pprint(message)
+
+		local broadcast_message = client_id .. "/" .. message
+		self.omginstance:broadcast_binary_message(broadcast_message)
+	else
+		print(os.date() .. " [SERVER] Unsupported message received, qualifier=" .. tostring(message_qualifier))
+	end
+end
+
+local function handle_server_event(self, event)
+	print(os.date() .. " [SERVER] Event received, event=" .. json.encode(event))
+
+	local event_qualifier = event.qualifier
+	local event_body = event.body
+
+	if event_qualifier == omgruntime.constants.events.SERVER_STARTED then
+		local runtime_qualifier = event_body.runtime_qualifier
+		print(os.date() .. " [SERVER] Server started, qualifier=" .. runtime_qualifier)
+		self.runtime_qualifier = runtime_qualifier
+		
+	elseif event_qualifier == omgruntime.constants.events.MESSAGE_RECEIVED then
+		local message_qualifier = event_body.qualifier
+		local message_body = event_body.body
+		
+		local runtime_qualifier = self.runtime_qualifier
+		if runtime_qualifier == omgruntime.constants.runtimes.LOBBY then
+			handle_lobby_message(self, message_qualifier, message_body)
+		elseif runtime_qualifier == omgruntime.constants.runtimes.MATCH then
+			handle_match_message(self, message_qualifier, message_body)
+		else
+			print("[SERVER] Unsupported qualifier, qualifier=" .. tostring(runtime_qualifier))
+		end
+		
+	end
+end
+
+function init(self)
+	local options = {
+		event_handler = function(event) handle_server_event(self, event) end,
+		debug_logging = true,
+		trace_logging = false,
+	}
+
+	local omginstance = omgruntime:create()
+	self.omginstance = omginstance
+	
+	local omgconfig = omginstance:init(options)
+	local dispatched = omgconfig.runtime_qualifier == omgruntime.constants.runtimes.MATCH
+	omginstance:start(dispatched)
+end
+
+function update(self, dt)
+	self.omginstance:update(dt)
+end

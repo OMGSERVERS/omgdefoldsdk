@@ -2,14 +2,6 @@
 
 This is [OMGSERVERS](https://github.com/OMGSERVERS/omgservers) SDK
 for [Defold Engine](https://github.com/defold/defold).
-
-This project is configured to share the `omgservers` directory, which contains:
-
-- [OMGPLAYER SDK](https://github.com/OMGSERVERS/omgdefold/tree/main/omgservers/omgplayer): used for game clients to
-  interact with the backend.
-- [OMGRUNTIME SDK](https://github.com/OMGSERVERS/omgdefold/tree/main/omgservers/omgruntime): used for executing
-  backend-specific commands from game runtimes.
-
 It can be included in a game project by following the instructions provided in
 the [Defold documentation](https://defold.com/manuals/libraries/#setting-up-library-dependencies).
 
@@ -18,10 +10,9 @@ the [Defold documentation](https://defold.com/manuals/libraries/#setting-up-libr
 - [Defold WebSocket Extension](https://github.com/defold/extension-websocket)
 - [Defold Cryptography Extension](https://github.com/defold/extension-crypt)
 
-### Getting Started with the Sample Project
+### Getting Started
 
-1. Run `./omgprojectctl.sh build` to build the Docker container.
-1. Run `./omgserversctl.sh localtesting runServer` to start the server in a Docker container.
-1. Run `./omgserversctl.sh localtesting initProject` to initialize a new server project and developer account.
-1. Run `./omgserversctl.sh localtesting deployProject` to deploy a new project version locally.
-1. Open `game.project` in Defold and run the game.
+1. `curl -L https://github.com/OMGSERVERS/omgservers/releases/download/0.3.0/install.sh | bash`
+1. `./omgserversctl.sh developer local init-tenant`
+1. `docker build -t omgservers/localtesting:latest .`
+1. `./omgserversctl.sh developer local deploy-version -c config.json -i omgservers/localtesting:latest`

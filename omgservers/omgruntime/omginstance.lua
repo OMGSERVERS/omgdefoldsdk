@@ -7,152 +7,158 @@ local omghttp = require("omgservers.omgruntime.omghttp")
 
 local omginstance
 omginstance = {
-	config = nil,
-	http = nil,
-	events = nil,
-	client = nil,
-	dispatcher = nil,
-	process = nil,
-	started = false,
-	-- Methods
-	init = function(self, options)
-		assert(self, "Self must not be nil.")
-		assert(options, "Options must not be nil.")
-		assert(not self.started, "Server already started.")
-
-		self.config = omgconfig:create(options)
-		self:reset()
-		
-		return self.config.runtime_qualifier
-	end,
-	reset = function(self)
+	create = function(self)
 		assert(self, "Self must not be nil.")
 
-		self.http = omghttp:create({
-			config = self.config
-		})
+		return {
+			config = nil,
+			http = nil,
+			events = nil,
+			client = nil,
+			dispatcher = nil,
+			process = nil,
+			started = false,
+			-- Methods
+			init = function(instance, options)
+				assert(instance, "Self must not be nil.")
+				assert(options, "Options must not be nil.")
+				assert(not instance.started, "Server already started.")
 
-		self.events = omgevents:create({
-			config = self.config
-		})
-		
-		self.client = omgclient:create({
-			config = self.config,
-			http = self.http
-		})
+				instance.config = omgconfig:create(options)
+				instance:reset()
 
-		self.dispatcher = omgdispatcher:create({
-			config = self.config,
-			events = self.events
-		})
+				return instance.config
+			end,
+			reset = function(instance)
+				assert(instance, "Self must not be nil.")
 
-		self.process = omgprocess:create({
-			config = self.config,
-			events = self.events,
-			client = self.client,
-		})
+				instance.http = omghttp:create({
+					config = instance.config
+				})
 
-		self.started = false
-	end,
-	start = function(self, dispatched)
-		assert(self, "Self must not be nil.")
-		assert(self.config, "Server must be initialized.")
-		assert(not self.started, "Server already started")
+				instance.events = omgevents:create({
+					config = instance.config
+				})
 
-		local callback = function()
-			self.started = true
+				instance.client = omgclient:create({
+					config = instance.config,
+					http = instance.http
+				})
 
-			local runtime_qualifier = self.config.runtime_qualifier
-			self.events:server_started(runtime_qualifier)
-		end
-		
-		self.client:create_token(function(api_token, dispatcher_url)
-			if dispatched or false then
-				self.dispatcher:connect(dispatcher_url, callback)
-			else
-				callback()
-			end
-		end)
-	end,
-	update = function(self, dt)
-		assert(self, "Self must not be nil.")
-		assert(self.config, "Server must be initialized.")
+				instance.dispatcher = omgdispatcher:create({
+					config = instance.config,
+					events = instance.events
+				})
 
-		if self.started then
-			self.process:update(dt)
-		end
-	end,
-	-- Commands
-	set_profile = function(self, client_id, profile)
-		assert(self.config, "Server must be initialized.")
-		assert(self.started, "The server must be started.")
-		self.client:set_profile(client_id, profile)
-	end,
-	respond_client = function(self, client_id, message)
-		assert(self.config, "Server must be initialized.")
-		assert(self.started, "The server must be started.")
-		self.client:respond_client(client_id, message)
-	end,
-	multicast_message = function(self, clients, message)
-		assert(self.config, "Server must be initialized.")
-		assert(self.started, "The server must be started.")
-		self.client:multicast_message(clients, message)
-	end,
-	broadcast_message = function(self, message)
-		assert(self.config, "Server must be initialized.")
-		assert(self.started, "The server must be started.")
-		self.client:broadcast_message(message)
-	end,
-	kick_client = function(self, client_id)
-		assert(self.config, "Server must be initialized.")
-		assert(self.started, "The server must be started.")
-		self.client:kick_client(client_id)
-	end,
-	request_matchmaking = function(self, client_id, mode)
-		assert(self.config, "Server must be initialized.")
-		assert(self.started, "The server must be started.")
-		self.client:request_matchmaking(client_id, mode)
-	end,
-	stop_matchmaking = function(self)
-		assert(self.config, "Server must be initialized.")
-		assert(self.started, "The server must be started.")
-		self.client:stop_matchmaking()
-	end,
-	upgrade_connection = function(self, client_id)
-		assert(self.config, "Server must be initialized.")
-		assert(self.started, "The server must be started.")
-		self.client:upgrade_connection(client_id)
-	end,
-	-- Messaging
-	respond_text_message = function(self, client_id, message)
-		assert(self.config, "Server must be initialized.")
-		assert(self.started, "The server must be started.")
-		self.dispatcher:respond_text_message(client_id, message)
-	end,
-	respond_binary_message = function(self, client_id, message)
-		assert(self.config, "Server must be initialized.")
-		assert(self.started, "The server must be started.")
-		self.dispatcher:respond_binary_message(client_id, message)
-	end,
-	multicast_text_message = function(self, clients, message)
-		assert(self.config, "Server must be initialized.")
-		assert(self.started, "The server must be started.")
-		self.dispatcher:multicast_text_message(clients, message)
-	end,
-	multicast_binary_message = function(self, clients, message)
-		assert(self.config, "Server must be initialized.")
-		assert(self.started, "The server must be started.")
-		self.dispatcher:multicast_binary_message(clients, message)
-	end,
-	broadcast_text_message = function(self, message)
-		assert(self.config, "Server must be initialized.")
-		assert(self.started, "The server must be started.")
-		self.dispatcher:broadcast_text_message(message)
-	end,
-	broadcast_binary_message = function(self, message)
-		assert(self.config, "Server must be initialized.")
-		assert(self.started, "The server must be started.")
-		self.dispatcher:broadcast_binary_message(message)
+				instance.process = omgprocess:create({
+					config = instance.config,
+					events = instance.events,
+					client = instance.client,
+				})
+
+				instance.started = false
+			end,
+			start = function(instance, dispatched)
+				assert(instance, "Self must not be nil.")
+				assert(instance.config, "Server must be initialized.")
+				assert(not instance.started, "Server already started")
+
+				local callback = function()
+					instance.started = true
+
+					local runtime_qualifier = instance.config.runtime_qualifier
+					instance.events:server_started(runtime_qualifier)
+				end
+
+				instance.client:create_token(function(api_token, dispatcher_url)
+					if dispatched or false then
+						instance.dispatcher:connect(dispatcher_url, callback)
+					else
+						callback()
+					end
+				end)
+			end,
+			update = function(instance, dt)
+				assert(instance, "Self must not be nil.")
+				assert(instance.config, "Server must be initialized.")
+
+				if instance.started then
+					instance.process:update(dt)
+				end
+			end,
+			-- Commands
+			set_profile = function(instance, client_id, profile)
+				assert(instance.config, "Server must be initialized.")
+				assert(instance.started, "The server must be started.")
+				instance.client:set_profile(client_id, profile)
+			end,
+			respond_client = function(instance, client_id, message)
+				assert(instance.config, "Server must be initialized.")
+				assert(instance.started, "The server must be started.")
+				instance.client:respond_client(client_id, message)
+			end,
+			multicast_message = function(instance, clients, message)
+				assert(instance.config, "Server must be initialized.")
+				assert(instance.started, "The server must be started.")
+				instance.client:multicast_message(clients, message)
+			end,
+			broadcast_message = function(instance, message)
+				assert(instance.config, "Server must be initialized.")
+				assert(instance.started, "The server must be started.")
+				instance.client:broadcast_message(message)
+			end,
+			kick_client = function(instance, client_id)
+				assert(instance.config, "Server must be initialized.")
+				assert(instance.started, "The server must be started.")
+				instance.client:kick_client(client_id)
+			end,
+			request_matchmaking = function(instance, client_id, mode)
+				assert(instance.config, "Server must be initialized.")
+				assert(instance.started, "The server must be started.")
+				instance.client:request_matchmaking(client_id, mode)
+			end,
+			stop_matchmaking = function(instance)
+				assert(instance.config, "Server must be initialized.")
+				assert(instance.started, "The server must be started.")
+				instance.client:stop_matchmaking()
+			end,
+			upgrade_connection = function(instance, client_id)
+				assert(instance.config, "Server must be initialized.")
+				assert(instance.started, "The server must be started.")
+				instance.client:upgrade_connection(client_id)
+			end,
+			-- Messaging
+			respond_text_message = function(instance, client_id, message)
+				assert(instance.config, "Server must be initialized.")
+				assert(instance.started, "The server must be started.")
+				instance.dispatcher:respond_text_message(client_id, message)
+			end,
+			respond_binary_message = function(instance, client_id, message)
+				assert(instance.config, "Server must be initialized.")
+				assert(instance.started, "The server must be started.")
+				instance.dispatcher:respond_binary_message(client_id, message)
+			end,
+			multicast_text_message = function(instance, clients, message)
+				assert(instance.config, "Server must be initialized.")
+				assert(instance.started, "The server must be started.")
+				instance.dispatcher:multicast_text_message(clients, message)
+			end,
+			multicast_binary_message = function(instance, clients, message)
+				assert(instance.config, "Server must be initialized.")
+				assert(instance.started, "The server must be started.")
+				instance.dispatcher:multicast_binary_message(clients, message)
+			end,
+			broadcast_text_message = function(instance, message)
+				assert(instance.config, "Server must be initialized.")
+				assert(instance.started, "The server must be started.")
+				instance.dispatcher:broadcast_text_message(message)
+			end,
+			broadcast_binary_message = function(instance, message)
+				assert(instance.config, "Server must be initialized.")
+				assert(instance.started, "The server must be started.")
+				instance.dispatcher:broadcast_binary_message(message)
+			end,
+		}
 	end,
 }
 

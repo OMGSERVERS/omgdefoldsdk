@@ -59,7 +59,7 @@ function init(self)
 		event_handler = function(event) handle_event(self, event) end,
 		service_url = configuration.url,
 		debug_logging = true,
-		trace_logging = true,
+		trace_logging = false,
 	}
 	local omginstance = omgplayer:create()
 	self.omginstance = omginstance
