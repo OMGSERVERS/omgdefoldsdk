@@ -1,0 +1,13 @@
+{
+  "min_lobbies": 1,
+  "lobby": {
+    "min_lifetime": 600
+  },
+  "matchmaker": {
+    "modes": {
+      "game_mode": {
+        "min_matches": 1
+      }
+    }
+  }
+}
