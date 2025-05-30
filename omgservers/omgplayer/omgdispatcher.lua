@@ -31,18 +31,18 @@ omgdispatcher = {
 				}
 
 				if debug_logging then
-					print(os.date() .. " [OMGPLAYER] Connecting to dispatcher, url=" .. connection_url)
+					print(os.date() .. " [OMGPLAYER] Connecting to dispatcher, url=" .. tostring(connection_url))
 				end
 
 				instance.self_disconnection = false
 				local connection = websocket.connect(connection_url, params, function(_, _, data)
 					if data.event == websocket.EVENT_DISCONNECTED then
 						if debug_logging then
-							print(os.date() .. " [OMGPLAYER] Dispatcher disconnected, message=" .. data.message .. ", code=" .. data.code)
+							print(os.date() .. " [OMGPLAYER] Dispatcher disconnected, message=" .. tostring(data.message) .. ", code=" .. tostring(data.code))
 						end
 
 						if not instance.self_disconnection then
-							state:fail("dipstacher disconnected, message=" .. data.message .. ", code=" .. data.code)
+							state:fail("dipstacher disconnected, message=" .. tostring(data.message) .. ", code=" .. tostring(data.code))
 						end
 
 					elseif data.event == websocket.EVENT_CONNECTED then
@@ -55,7 +55,7 @@ omgdispatcher = {
 						end
 
 					elseif data.event == websocket.EVENT_ERROR then
-						state:fail("dispatcher failed, message=" .. data.message)
+						state:fail("dispatcher failed, message=" .. tostring(data.message))
 
 					elseif data.event == websocket.EVENT_MESSAGE then
 						events:message_received(data.message)

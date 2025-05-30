@@ -72,7 +72,7 @@ omginstance = {
 				assert(not instance.state.failed, "Instance is in a failed state, reset required.")
 
 				instance.client:ping_service(function(latency, message)
-					instance.events:service_pinged(latency)
+					instance.events:pong_received(latency, message)
 				end)
 			end,
 			sign_up = function(instance)

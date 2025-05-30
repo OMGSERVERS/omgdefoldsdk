@@ -10,6 +10,7 @@ omgconfig = {
 			event_handler,
 			-- Optional
 			service_url,
+			info_logging,
 			debug_logging,
 			trace_logging,
 			default_interval,
@@ -26,6 +27,7 @@ omgconfig = {
 		assert(options.event_handler, "Event handler must not be null.")
 
 		local service_url = options.service_url or "https://demoserver.omgservers.com"
+		local info_logging = options.info_logging or true
 		local debug_logging = options.debug_logging or false
 		local trace_logging = options.trace_logging or false
 		local default_interval = options.default_interval or 1
@@ -44,6 +46,7 @@ omgconfig = {
 			stage = options.stage,
 			event_handler = options.event_handler,
 			service_url = service_url,
+			info_logging = info_logging,
 			debug_logging = debug_logging,
 			trace_logging = trace_logging,
 			default_interval = default_interval,
@@ -51,7 +54,7 @@ omgconfig = {
 			iterations_threshold = iterations_threshold,
 		}
 
-		if debug_logging then
+		if info_logging then
 			print(os.date() .. " [OMGPLAYER] Config created")
 			pprint(instance)
 		end

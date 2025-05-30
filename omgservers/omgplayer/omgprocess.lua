@@ -47,7 +47,7 @@ omgprocess = {
 				if message_qualifier == omgconstants.messages.CLIENT_GREETED then
 					local version_id = incoming_message.body.version_id
 					local version_created = incoming_message.body.version_created
-					state:set_version(version_id, version_created)
+					state:greet_player(version_id, version_created)
 
 				elseif message_qualifier == omgconstants.messages.RUNTIME_ASSIGNED then
 					local runtime_id = incoming_message.body.runtime_id
@@ -63,7 +63,7 @@ omgprocess = {
 						state:assign_match(runtime_id)
 
 					else
-						state:fail("unknown runtime assigned, " .. runtime_qualifier)
+						state:fail("unsupported runtime assigned, " .. tostring(runtime_qualifier))
 					end
 
 				elseif message_qualifier == omgconstants.messages.MESSAGE_PRODUCED then
@@ -80,12 +80,12 @@ omgprocess = {
 							events:connection_dispatched()
 						end)
 					else
-						state:fail("unsupported protocol, " .. upgrade_protocol)
+						state:fail("unsupported protocol, " .. tostring(upgrade_protocol))
 					end
 					
 				elseif message_qualifier == omgconstants.messages.CLIENT_DELETED then
 					local reason = incoming_message.body.reason
-					state:fail("client deleted, reason=" .. reason)
+					state:fail("client deleted, reason=" .. tostring(reason))
 					
 				end
 			end,

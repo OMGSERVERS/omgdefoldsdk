@@ -26,9 +26,9 @@ omgevents = {
 				end
 				instance.events[#instance.events + 1] = event
 			end,
-			service_pinged = function(instance, latency, message)
+			pong_received = function(instance, latency, message)
 				local event = {
-					qualifier = omgconstants.events.SERVICE_PINGED,
+					qualifier = omgconstants.events.PONG_RECEIVED,
 					body = {
 						latency = latency,
 						message = message,

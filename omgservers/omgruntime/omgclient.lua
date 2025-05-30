@@ -62,7 +62,7 @@ omgclient = {
 						inlined_body = json.encode(decoded_body)
 					end
 
-					omgsystem:terminate_server(omgconstants.exit_codes.API, "failed to create token, response_status=" .. response_status .. ", decoded_body=" .. inlined_body .. ", decoding_error=" .. tostring(decoding_error))
+					omgsystem:terminate_server(omgconstants.exit_codes.API, "failed to create token, response_status=" .. tostring(response_status) .. ", decoded_body=" .. tostring(inlined_body) .. ", decoding_error=" .. tostring(decoding_error))
 				end
 
 				local api_token = nil
@@ -86,7 +86,7 @@ omgclient = {
 						local message_body = incoming_message.body
 
 						if debug_logging then
-							print(os.date() .. " [OMGSERVER] Handle message, id=" .. string.format("%.0f", message_id) .. ", qualifier=" .. message_qualifier .. ", body=" .. json.encode(message_body))
+							print(os.date() .. " [OMGSERVER] Handle message, id=" .. string.format("%.0f", message_id) .. ", qualifier=" .. tostring(message_qualifier) .. ", body=" .. json.encode(message_body))
 						end
 						
 						instance.messages:add_consumed_message(incoming_message)

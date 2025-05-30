@@ -9,7 +9,8 @@ omgconfig = {
 		-- Required
 		event_handler, 
 		-- Optional
-		debug_logging, 
+		info_logging,
+		debug_logging,
 		trace_logging,
 		default_interval, 
 		faster_interval,
@@ -21,6 +22,7 @@ omgconfig = {
 		assert(options, "Options must not be nil.")
 		assert(options.event_handler, "Event handler must not be null.")
 
+		local info_logging = options.debug_logging or true
 		local debug_logging = options.debug_logging or false
 		local trace_logging = options.trace_logging or false
 		local default_interval = options.default_interval or 1
@@ -34,22 +36,22 @@ omgconfig = {
 
 		local service_url = os.getenv(omgconstants.environment.SERVICE_URL)
 		if not service_url then
-			omgsystem:terminate_server(omgconstants.exit_codes.ENVIRONMENT, "missing environment variable, variable=" .. omgconstants.environment.SERVICE_URL)
+			omgsystem:terminate_server(omgconstants.exit_codes.ENVIRONMENT, "missing environment variable, variable=" .. tostring(omgconstants.environment.SERVICE_URL))
 		end
 
 		local runtime_id = os.getenv(omgconstants.environment.RUNTIME_ID)
 		if not runtime_id then
-			omgsystem:terminate_server(omgconstants.exit_codes.ENVIRONMENT, "missing environment variable, variable=" .. omgconstants.environment.RUNTIME_ID)
+			omgsystem:terminate_server(omgconstants.exit_codes.ENVIRONMENT, "missing environment variable, variable=" .. tostring(omgconstants.environment.RUNTIME_ID))
 		end
 
 		local password = os.getenv(omgconstants.environment.PASSWORD)
 		if not password then
-			omgsystem:terminate_server(omgconstants.exit_codes.ENVIRONMENT, "missing environment variable, variable=" .. omgconstants.environment.PASSWORD)
+			omgsystem:terminate_server(omgconstants.exit_codes.ENVIRONMENT, "missing environment variable, variable=" .. tostring(omgconstants.environment.PASSWORD))
 		end
 
 		local qualifier = os.getenv(omgconstants.environment.QUALIFIER)
 		if not qualifier then
-			omgsystem:terminate_server(omgconstants.exit_codes.ENVIRONMENT, "missing environment variable, variable=" .. omgconstants.environment.QUALIFIER)
+			omgsystem:terminate_server(omgconstants.exit_codes.ENVIRONMENT, "missing environment variable, variable=" .. tostring(omgconstants.environment.QUALIFIER))
 		end
 		
 		local instance = {
@@ -59,6 +61,7 @@ omgconfig = {
 			runtime_id = runtime_id,
 			password = "<hidden>",
 			runtime_qualifier = qualifier,
+			info_logging = info_logging,
 			debug_logging = debug_logging,
 			trace_logging = trace_logging,
 			default_interval = default_interval,
@@ -66,7 +69,7 @@ omgconfig = {
 			iterations_threshold = iterations_threshold,
 		}
 
-		if debug_logging then
+		if info_logging then
 			print(os.date() .. " [OMGSERVER] Config created")
 			pprint(instance)
 		end

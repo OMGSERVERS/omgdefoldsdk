@@ -19,22 +19,18 @@ omgstate = {
 			type = "omgstate",
 			version_id = nil,
 			version_created = nil,
-			greeted = false,
 			lobby_id = nil,
 			match_id = nil,
 			failed = false,
 			-- Methods
-			set_version = function(instance, version_id, version_created)
+			greet_player = function(instance, version_id, version_created)
 				instance.version_id = version_id
 				instance.version_created = version_created
+				events:player_greeted(instance.version_id, instance.version_created)
 			end,
 			assign_lobby = function(instance, runtime_id)
 				instance.lobby_id = runtime_id
 				instance.match_id = nil
-
-				if not instance.greeted then
-					instance:greet_player()
-				end
 
 				events:runtime_assigned(omgconstants.runtimes.LOBBY, runtime_id)
 			end,
@@ -43,10 +39,6 @@ omgstate = {
 				instance.match_id = runtime_id
 				
 				events:runtime_assigned(omgconstants.runtimes.MATCH, runtime_id)
-			end,
-			greet_player = function(instance)
-				instance.greeted = true
-				events:player_greeted(instance.version_id, instance.version_created)
 			end,
 			fail = function(instance, reason)
 				instance.failed = true

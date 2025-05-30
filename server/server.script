@@ -16,7 +16,7 @@ local function handle_lobby_message(self, message_qualifier, message_body)
 		print(os.date() .. " [SERVER] Profile:")
 		pprint(profile)
 
-		self.omginstance:request_matchmaking(client_id, "game")
+		self.omginstance:request_matchmaking(client_id, "game_mode")
 
 	elseif message_qualifier == omgruntime.constants.messages.CLIENT_REMOVED then
 		local client_id = message_body.client_id
@@ -36,7 +36,7 @@ local function handle_match_message(self, message_qualifier, message_body)
 	if message_qualifier == omgruntime.constants.messages.RUNTIME_CREATED then
 		local runtime_config = message_body.runtime_config
 		print(os.date() .. " [SERVER] Runtime initialized:")
-		pprint(runtime_config.lobby)
+		pprint(runtime_config.match)
 		pprint(runtime_config.version)
 
 	elseif message_qualifier == omgruntime.constants.messages.CLIENT_ASSIGNED then
@@ -68,8 +68,6 @@ local function handle_match_message(self, message_qualifier, message_body)
 end
 
 local function handle_server_event(self, event)
-	print(os.date() .. " [SERVER] Event received, event=" .. json.encode(event))
-
 	local event_qualifier = event.qualifier
 	local event_body = event.body
 

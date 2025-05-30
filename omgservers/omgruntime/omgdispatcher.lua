@@ -52,7 +52,7 @@ omgdispatcher = {
 						end
 
 					elseif data.event == websocket.EVENT_ERROR then
-						omgsystem:terminate_server(omgconstants.exit_codes.WS, "dispatcher failed, message=" .. data.message)
+						omgsystem:terminate_server(omgconstants.exit_codes.WS, "dispatcher failed, message=" .. tostring(data.message))
 
 					elseif data.event == websocket.EVENT_MESSAGE then
 						local decoded_message = json.decode(data.message)
@@ -89,7 +89,7 @@ omgdispatcher = {
 				})
 
 				if trace_logging then
-					print(os.date() .. " [OMGSERVER] Outgoing message, encoded_message=" .. encoded_message)
+					print(os.date() .. " [OMGSERVER] Outgoing message, encoded_message=" .. tostring(encoded_message))
 				end
 
 				websocket.send(instance.connection, encoded_message, {

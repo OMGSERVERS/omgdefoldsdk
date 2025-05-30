@@ -55,7 +55,7 @@ omgclient = {
 					local message = response_body.message
 
 					if debug_logging then
-						print(os.date() .. " [OMGPLAYER] Ping response received, latency=" .. latency)
+						print(os.date() .. " [OMGPLAYER] Pong received, latency=" .. tostring(latency))
 					end
 
 					instance.ping_latency = latency
@@ -71,7 +71,7 @@ omgclient = {
 						inlined_body = json.encode(decoded_body)
 					end
 
-					print(os.date() .. " [OMGPLAYER] Failed to ping, response_status=" .. response_status .. ", decoded_body=" .. tostring(inlined_body) .. ", encoding_error=" .. tostring(encoding_error))
+					print(os.date() .. " [OMGPLAYER] Failed to ping, response_status=" .. tostring(response_status) .. ", decoded_body=" .. tostring(inlined_body) .. ", encoding_error=" .. tostring(encoding_error))
 				end
 
 				local retries = 0
@@ -92,7 +92,7 @@ omgclient = {
 					instance.user_password = password
 
 					if debug_logging then
-						print(os.date() .. " [OMGPLAYER] User created, user_id=" .. user_id .. ", password=" .. string.sub(password, 1, 4) .. "..")
+						print(os.date() .. " [OMGPLAYER] User created, user_id=" .. tostring(user_id) .. ", password=" .. string.sub(password, 1, 4) .. "..")
 					end
 					
 					if callback then
@@ -106,7 +106,7 @@ omgclient = {
 						inlined_body = json.encode(decoded_body)
 					end
 					
-					state:fail("failed to create user, response_status=" .. response_status .. ", decoded_body=" .. tostring(inlined_body) .. ", encoding_error=" .. tostring(encoding_error))
+					state:fail("failed to create user, response_status=" .. tostring(response_status) .. ", decoded_body=" .. tostring(inlined_body) .. ", encoding_error=" .. tostring(encoding_error))
 				end
 
 				local retries = 2
@@ -118,7 +118,7 @@ omgclient = {
 				instance.user_password = password
 
 				if debug_logging then
-					print(os.date() .. " [OMGPLAYER] User credentials set, user_id=" .. user_id .. ", password=" .. string.sub(password, 1, 4) .. "..")
+					print(os.date() .. " [OMGPLAYER] User credentials set, user_id=" .. tostring(user_id) .. ", password=" .. string.sub(password, 1, 4) .. "..")
 				end
 			end,
 			create_token = function(instance, callback)
@@ -149,7 +149,7 @@ omgclient = {
 						inlined_body = json.encode(decoded_body)
 					end
 					
-					state:fail("failed to create token, response_status=" .. response_status .. ", decoded_body=" .. tostring(inlined_body) .. ", encoding_error=" .. tostring(encoding_error))
+					state:fail("failed to create token, response_status=" .. tostring(response_status) .. ", decoded_body=" .. tostring(inlined_body) .. ", encoding_error=" .. tostring(encoding_error))
 				end
 
 				local retries = 2
@@ -172,7 +172,7 @@ omgclient = {
 					instance.client_messages = omgmessages:create({})
 
 					if debug_logging then
-						print(os.date() .. " [OMGPLAYER] Client created, client_id=" .. client_id)
+						print(os.date() .. " [OMGPLAYER] Client created, client_id=" .. tostring(client_id))
 					end
 					
 					if callback then
@@ -186,7 +186,7 @@ omgclient = {
 						inlined_body = json.encode(decoded_body)
 					end
 					
-					state:fail("failed to create client, response_status=" .. response_status .. ", decoded_body=" .. tostring(inlined_body) .. ", encoding_error=" .. tostring(encoding_error))
+					state:fail("failed to create client, response_status=" .. tostring(response_status) .. ", decoded_body=" .. tostring(inlined_body) .. ", encoding_error=" .. tostring(encoding_error))
 				end
 
 				local retries = 2
@@ -226,7 +226,7 @@ omgclient = {
 						inlined_body = json.encode(decoded_body)
 					end
 					
-					state:fail("failed to interchange messages, response_status=" .. response_status .. ", decoded_body=" .. tostring(inlined_body) .. ", encoding_error=" .. tostring(encoding_error))
+					state:fail("failed to interchange messages, response_status=" .. tostring(response_status) .. ", decoded_body=" .. tostring(inlined_body) .. ", encoding_error=" .. tostring(encoding_error))
 				end
 
 				local retries = 4

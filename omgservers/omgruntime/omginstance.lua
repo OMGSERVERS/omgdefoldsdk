@@ -89,73 +89,73 @@ omginstance = {
 			-- Commands
 			set_profile = function(instance, client_id, profile)
 				assert(instance.config, "Server must be initialized.")
-				assert(instance.started, "The server must be started.")
+				assert(instance.started, "Server must be started.")
 				instance.client:set_profile(client_id, profile)
 			end,
 			respond_client = function(instance, client_id, message)
 				assert(instance.config, "Server must be initialized.")
-				assert(instance.started, "The server must be started.")
+				assert(instance.started, "Server must be started.")
 				instance.client:respond_client(client_id, message)
 			end,
 			multicast_message = function(instance, clients, message)
 				assert(instance.config, "Server must be initialized.")
-				assert(instance.started, "The server must be started.")
+				assert(instance.started, "Server must be started.")
 				instance.client:multicast_message(clients, message)
 			end,
 			broadcast_message = function(instance, message)
 				assert(instance.config, "Server must be initialized.")
-				assert(instance.started, "The server must be started.")
+				assert(instance.started, "Server must be started.")
 				instance.client:broadcast_message(message)
 			end,
 			kick_client = function(instance, client_id)
 				assert(instance.config, "Server must be initialized.")
-				assert(instance.started, "The server must be started.")
+				assert(instance.started, "Server must be started.")
 				instance.client:kick_client(client_id)
 			end,
 			request_matchmaking = function(instance, client_id, mode)
 				assert(instance.config, "Server must be initialized.")
-				assert(instance.started, "The server must be started.")
+				assert(instance.started, "Server must be started.")
 				instance.client:request_matchmaking(client_id, mode)
 			end,
 			stop_matchmaking = function(instance)
 				assert(instance.config, "Server must be initialized.")
-				assert(instance.started, "The server must be started.")
+				assert(instance.started, "Server must be started.")
 				instance.client:stop_matchmaking()
 			end,
 			upgrade_connection = function(instance, client_id)
 				assert(instance.config, "Server must be initialized.")
-				assert(instance.started, "The server must be started.")
+				assert(instance.started, "Server must be started.")
 				instance.client:upgrade_connection(client_id)
 			end,
 			-- Messaging
 			respond_text_message = function(instance, client_id, message)
 				assert(instance.config, "Server must be initialized.")
-				assert(instance.started, "The server must be started.")
+				assert(instance.started, "Server must be started.")
 				instance.dispatcher:respond_text_message(client_id, message)
 			end,
 			respond_binary_message = function(instance, client_id, message)
 				assert(instance.config, "Server must be initialized.")
-				assert(instance.started, "The server must be started.")
+				assert(instance.started, "Server must be started.")
 				instance.dispatcher:respond_binary_message(client_id, message)
 			end,
 			multicast_text_message = function(instance, clients, message)
 				assert(instance.config, "Server must be initialized.")
-				assert(instance.started, "The server must be started.")
+				assert(instance.started, "Server must be started.")
 				instance.dispatcher:multicast_text_message(clients, message)
 			end,
 			multicast_binary_message = function(instance, clients, message)
 				assert(instance.config, "Server must be initialized.")
-				assert(instance.started, "The server must be started.")
+				assert(instance.started, "Server must be started.")
 				instance.dispatcher:multicast_binary_message(clients, message)
 			end,
 			broadcast_text_message = function(instance, message)
 				assert(instance.config, "Server must be initialized.")
-				assert(instance.started, "The server must be started.")
+				assert(instance.started, "Server must be started.")
 				instance.dispatcher:broadcast_text_message(message)
 			end,
 			broadcast_binary_message = function(instance, message)
 				assert(instance.config, "Server must be initialized.")
-				assert(instance.started, "The server must be started.")
+				assert(instance.started, "Server must be started.")
 				instance.dispatcher:broadcast_binary_message(message)
 			end,
 		}
