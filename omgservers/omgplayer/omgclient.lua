@@ -1,5 +1,4 @@
 local omgconstants = require("omgservers.omgplayer.omgconstants")
-local omgmessages = require("omgservers.omgplayer.omgmessages")
 
 local omgclient
 omgclient = {
@@ -9,6 +8,7 @@ omgclient = {
 			config, -- omgconfig instance
 			state, -- omgstate instance
 			http, -- omghttp instance
+			messages, -- omgmessages instance
 		},
 	]]--
 	create = function(self, options)
@@ -17,6 +17,7 @@ omgclient = {
 		assert(options.config, "Config must not be nil.")
 		assert(options.state, "State must not be nil.")
 		assert(options.http, "Http must not be nil.")
+		assert(options.messages, "Messages must not be nil.")
 
 		local debug_logging = options.config.debug_logging
 		
@@ -27,6 +28,7 @@ omgclient = {
 
 		local state = options.state
 		local http = options.http
+		local messages = options.messages
 		
 		local ping_service_url = service_url .. "/service/v1/entrypoint/player/request/ping-service"
 		local create_user_url = service_url .. "/service/v1/entrypoint/player/request/create-user"
@@ -41,7 +43,6 @@ omgclient = {
 			user_password = nil,
 			api_token = nil,
 			client_id = nil,
-			client_messages = nil,
 			-- Methods
 			ping_service = function(instance, callback)
 				local request_url = ping_service_url
@@ -168,15 +169,16 @@ omgclient = {
 				
 				local response_handler = function(response_status, response_body)
 					local client_id = response_body.client_id
+					local connection_url = response_body.connection_url
+					
 					instance.client_id = client_id
-					instance.client_messages = omgmessages:create({})
 
 					if debug_logging then
-						print(os.date() .. " [OMGPLAYER] Client created, client_id=" .. tostring(client_id))
+						print(os.date() .. " [OMGPLAYER] Client created, client_id=" .. tostring(client_id) .. ", connection_url=" .. tostring(connection_url))
 					end
 					
 					if callback then
-						callback(client_id)
+						callback(client_id, connection_url)
 					end
 				end
 				
@@ -196,15 +198,13 @@ omgclient = {
 			end,
 			interchange = function(instance, callback)
 				assert(instance.api_token, "Token must be created.")
-				assert(instance.client_id and instance.client_messages, "Client must be created.")
+				assert(instance.client_id, "Client must be created.")
 
-				local client_messages = instance.client_messages
-				
 				local request_url = interchange_messages_url
 				local request_body = {
 					client_id = instance.client_id,
-					outgoing_messages = client_messages:pull_outgoing_messages(),
-					consumed_messages = client_messages:pull_consumed_messages(),
+					outgoing_messages = messages:pull_outgoing_messages(),
+					consumed_messages = messages:pull_consumed_messages(),
 				}
 				
 				local response_handler = function(response_status, response_body)
@@ -212,7 +212,7 @@ omgclient = {
 
 					for message_index = 1, #incoming_messages do
 						local incoming_message = incoming_messages[message_index]
-						client_messages:add_incoming_message(incoming_message)
+						messages:add_incoming_message(incoming_message)
 					end
 
 					if callback then
@@ -234,15 +234,11 @@ omgclient = {
 				
 				http:request_server(request_url, request_body, response_handler, failure_handler, retries, api_token)
 			end,
-			pull_incoming_messages = function(instance)
-				assert(instance.client_id and instance.client_messages, "Client must be created.")
-				return instance.client_messages:pull_incoming_messages()
-			end,
 			send_message = function(instance, message)
 				assert(type(message) == "string", "Type of message must be string")
-				assert(instance.client_id and instance.client_messages, "Client must be created.")
+				assert(instance.client_id, "Client must be created.")
 
-				local message_id = instance.client_messages:next_message_id()
+				local message_id = messages:next_message_id()
 
 				local outgoing_message = {
 					id = message_id,
@@ -251,7 +247,7 @@ omgclient = {
 						message = message
 					}
 				}
-				instance.client_messages:add_outgoing_message(outgoing_message)
+				messages:add_outgoing_message(outgoing_message)
 			end,
 			fully_fledged = function(instance)
 				return instance.client_id ~= nil

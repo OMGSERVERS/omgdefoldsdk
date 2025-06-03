@@ -1,2 +1,2 @@
 #!/bin/bash
-docker build -t omgservers/localtesting:latest .
+docker build -t omgservers/omgdefoldsdk:latest .
