@@ -5,7 +5,7 @@ omgconfig = {
 		options = {
 			-- Required
 			tenant,
-			project
+			project,
 			stage,
 			event_handler,
 			-- Optional
@@ -13,6 +13,7 @@ omgconfig = {
 			info_logging,
 			debug_logging,
 			trace_logging,
+			through_connector,
 			default_interval,
 			faster_interval,
 			iterations_threshold,
@@ -30,6 +31,7 @@ omgconfig = {
 		local info_logging = options.info_logging or true
 		local debug_logging = options.debug_logging or false
 		local trace_logging = options.trace_logging or false
+		local through_connector = options.through_connector or true
 		local default_interval = options.default_interval or 1
 		local faster_interval = options.faster_interval or 0.5
 		local iterations_threshold = options.iterations_threshold or 4
@@ -49,6 +51,7 @@ omgconfig = {
 			info_logging = info_logging,
 			debug_logging = debug_logging,
 			trace_logging = trace_logging,
+			through_connector = through_connector,
 			default_interval = default_interval,
 			faster_interval = faster_interval,
 			iterations_threshold = iterations_threshold,

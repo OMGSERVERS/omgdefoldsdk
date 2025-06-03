@@ -8,7 +8,9 @@ omgprocess = {
 			config, -- omgconfig instance
 			events, -- omgevents instance
 			state, -- omgstate instance
+			messages, -- omgmessages instance
 			client, -- omgclient intance
+			connector, -- omgconnector instance
 			dispatcher, -- omgdispatcher instance
 		},
 	]]--
@@ -18,16 +20,21 @@ omgprocess = {
 		assert(options.config, "Config must not be nil.")
 		assert(options.events, "Events must not be nil.")
 		assert(options.state, "State must not be nil.")
+		assert(options.messages, "Messages must not be nil.")
 		assert(options.client, "Client must not be nil.")
+		assert(options.connector, "Connector must not be nil.")
 		assert(options.dispatcher, "Dispatcher must not be nil.")
 
+		local through_connector = options.config.through_connector
 		local debug_logging = options.config.debug_logging
 		local trace_logging = options.config.trace_logging
 
 		local config = options.config
 		local events = options.events
 		local state = options.state
+		local messages = options.messages
 		local client = options.client
+		local connector = options.connector
 		local dispatcher = options.dispatcher
 		
 		return {
@@ -37,7 +44,7 @@ omgprocess = {
 			faster_iterations = true,
 			interchange_requested = false,
 			-- Methods
-			handle = function(instance, incoming_message)
+			handle_message = function(instance, incoming_message)
 				local message_qualifier = incoming_message.qualifier
 
 				if trace_logging then
@@ -97,55 +104,68 @@ omgprocess = {
 				if state.failed then
 					return
 				end
-				
-				local iteration_timer = instance.iteration_timer + dt
 
-				local current_interval
-				if instance.faster_iterations then
-					current_interval = config.faster_interval
-				else
-					current_interval = config.default_interval
-				end
-
-				if instance.iteration_timer > current_interval then
-					instance.iteration_timer = 0
-
-					if not instance.interchange_requested then
-						instance.interchange_requested = true
-						client:interchange(function() instance.interchange_requested = false end)
+				if through_connector then
+					local outgoing_messages = messages:pull_outgoing_messages()
+					for _, outgoing_message in ipairs(outgoing_messages) do
+						connector:send_message(json.encode(outgoing_message))
 					end
 
-					local incoming_messages = client:pull_incoming_messages()
+					local incoming_messages = messages:pull_incoming_messages()
+					for _, incoming_message in ipairs(incoming_messages) do
+						instance:handle_message(incoming_message)
+					end
+					
+				else
+					local iteration_timer = instance.iteration_timer + dt
 
-					-- Switch between default and faster intervals
-					if #incoming_messages > 0 then
-						instance.empty_iterations = 0
-						if not instance.faster_iterations then
-							instance.faster_iterations = true
-
-							if debug_logging then
-								print(os.date() .. " [OMGPLAYER] Switched to faster iterations")
-							end
-						end
+					local current_interval
+					if instance.faster_iterations then
+						current_interval = config.faster_interval
 					else
-						local empty_iterations = instance.empty_iterations + 1
-						instance.empty_iterations = empty_iterations
+						current_interval = config.default_interval
+					end
 
-						if empty_iterations >= config.iterations_threshold then
-							if instance.faster_iterations then
-								instance.faster_iterations = false
+					if instance.iteration_timer > current_interval then
+						instance.iteration_timer = 0
+
+						if not instance.interchange_requested then
+							instance.interchange_requested = true
+							client:interchange(function() instance.interchange_requested = false end)
+						end
+
+						local incoming_messages = messages:pull_incoming_messages()
+
+						-- Switch between default and faster intervals
+						if #incoming_messages > 0 then
+							instance.empty_iterations = 0
+							if not instance.faster_iterations then
+								instance.faster_iterations = true
+
 								if debug_logging then
-									print(os.date() .. " [OMGPLAYER] Switched to default iterations")
+									print(os.date() .. " [OMGPLAYER] Switched to faster iterations")
+								end
+							end
+						else
+							local empty_iterations = instance.empty_iterations + 1
+							instance.empty_iterations = empty_iterations
+
+							if empty_iterations >= config.iterations_threshold then
+								if instance.faster_iterations then
+									instance.faster_iterations = false
+									if debug_logging then
+										print(os.date() .. " [OMGPLAYER] Switched to default iterations")
+									end
 								end
 							end
 						end
-					end
 
-					for _, incoming_message in ipairs(incoming_messages) do
-						instance:handle(incoming_message)
+						for _, incoming_message in ipairs(incoming_messages) do
+							instance:handle_message(incoming_message)
+						end
+					else
+						instance.iteration_timer = iteration_timer
 					end
-				else
-					instance.iteration_timer = iteration_timer
 				end
 			end,
 			update = function(instance, dt)

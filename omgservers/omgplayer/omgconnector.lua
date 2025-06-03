@@ -1,27 +1,27 @@
-local omgdispatcher
-omgdispatcher = {
+local omgconnector
+omgconnector = {
 	--[[
-		self,
-		options = {
-			config, -- omgconfig instance
-			events, -- omgevents instance
-			state, -- omgstate instance
-		},
+	self,
+	options = {
+		config, -- omgconfig instance
+		state, -- omgstate instance
+		message, -- omgmessage instance
+	},
 	]]--
 	create = function(self, options)
 		assert(self, "Self must not be nil.")
 		assert(options, "Options must not be nil.")
 		assert(options.config, "Config must not be nil.")
-		assert(options.events, "Events must not be nil.")
 		assert(options.state, "State must not be nil.")
+		assert(options.messages, "Messages must not be nil.")
 
 		local debug_logging = options.config.debug_logging
-	
-		local events = options.events
+
 		local state = options.state
+		local messages = options.messages
 
 		return {
-			type = "omgdispatcher",
+			type = "omgconnector",
 			connection = nil,
 			self_disconnection = false,
 			-- Methods
@@ -31,23 +31,23 @@ omgdispatcher = {
 				}
 
 				if debug_logging then
-					print(os.date() .. " [OMGPLAYER] Connecting to dispatcher, url=" .. tostring(connection_url))
+					print(os.date() .. " [OMGPLAYER] Connecting to connector, url=" .. tostring(connection_url))
 				end
 
 				instance.self_disconnection = false
 				local connection = websocket.connect(connection_url, params, function(_, _, data)
 					if data.event == websocket.EVENT_DISCONNECTED then
 						if debug_logging then
-							print(os.date() .. " [OMGPLAYER] Dispatcher disconnected, message=" .. tostring(data.message) .. ", code=" .. tostring(data.code))
+							print(os.date() .. " [OMGPLAYER] Connector disconnected, message=" .. tostring(data.message) .. ", code=" .. tostring(data.code))
 						end
 
 						if not instance.self_disconnection then
-							state:fail("dispatcher disconnected, message=" .. tostring(data.message) .. ", code=" .. tostring(data.code))
+							state:fail("connector disconnected, message=" .. tostring(data.message) .. ", code=" .. tostring(data.code))
 						end
 
 					elseif data.event == websocket.EVENT_CONNECTED then
 						if debug_logging then
-							print(os.date() .. " [OMGPLAYER] Connected to dispatcher")
+							print(os.date() .. " [OMGPLAYER] Connected to connector")
 						end
 
 						if callback then
@@ -55,10 +55,12 @@ omgdispatcher = {
 						end
 
 					elseif data.event == websocket.EVENT_ERROR then
-						state:fail("dispatcher failed, message=" .. tostring(data.message))
+						state:fail("connector failed, message=" .. tostring(data.message))
 
 					elseif data.event == websocket.EVENT_MESSAGE then
-						events:message_received(data.message)
+						local incoming_message = data.message
+						local decoded_message = json.decode(incoming_message)
+						messages:add_incoming_message(decoded_message)
 					end
 				end)
 
@@ -66,30 +68,22 @@ omgdispatcher = {
 			end,
 			disconnect = function(instance)
 				if instance.connection then
-					print(os.date() .. " [OMGPLAYER] Closing dispatcher connection")
+					print(os.date() .. " [OMGPLAYER] Closing connector connection")
 					websocket.disconnect(instance.connection)
 					instance.connection = nil
 					instance.self_disconnection = true
 				end
 			end,
-			send_text_message = function(instance, message)
-				assert(instance.connection, "Dispatcher must be connected")
+			send_message = function(instance, message)
+				assert(instance.connection, "Connector must be connected")
 				assert(type(message) == "string", "Type of message must be string")
 
 				websocket.send(instance.connection, message, {
 					type = websocket.DATA_TYPE_TEXT
 				})
-			end,
-			send_binary_buffer = function(instance, buffer)
-				assert(instance.connection, "Dispatcher must be connected")
-				assert(type(buffer) == "string", "Type of buffer must be string")
-
-				websocket.send(instance.connection, buffer, {
-					type = websocket.DATA_BINARY_TEXT
-				})
-			end,
+			end
 		}
 	end
 }
 
-return omgdispatcher
+return omgconnector

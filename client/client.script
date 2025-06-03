@@ -55,18 +55,18 @@ end
 function init(self)
 	pprint(configuration)
 
+	local omginstance = omgplayer:create()
+	self.omginstance = omginstance
+	
 	local options = {
 		tenant = configuration.tenant,
 		project = configuration.project,
 		stage = configuration.stage,
 		event_handler = function(event) handle_event(self, event) end,
 		service_url = configuration.url,
-		debug_logging = false,
+		debug_logging = true,
 		trace_logging = false,
 	}
-	local omginstance = omgplayer:create()
-	self.omginstance = omginstance
-
 	omginstance:init(options)
 	omginstance:ping()
 
