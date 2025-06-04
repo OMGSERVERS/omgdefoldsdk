@@ -26,8 +26,8 @@ omgconfig = {
 		local debug_logging = options.debug_logging or false
 		local trace_logging = options.trace_logging or false
 		local default_interval = options.default_interval or 1
-		local faster_interval = options.faster_interval or 0.5
-		local iterations_threshold = options.iterations_threshold or 4
+		local faster_interval = options.faster_interval or 0.33
+		local iterations_threshold = options.iterations_threshold or 30
 
 		assert(default_interval > 0, "Default interval must be greater than zero.")
 		assert(faster_interval > 0, "Faster interval must be greater than zero.")
