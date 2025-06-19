@@ -113,9 +113,9 @@ omginstance = {
 				instance.client:set_user(user_id, password)
 
 				instance.client:create_token(function(api_token)
-					instance.client:create_client(function(client_id, connection_url)
+					instance.client:create_client(function(client_id, connector_config)
 						if instance.config.through_connector then
-							instance.connector:connect(connection_url, function()
+							instance.connector:connect(connector_config, function()
 								instance.events:signed_in(client_id)
 							end)
 						else

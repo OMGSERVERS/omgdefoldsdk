@@ -70,9 +70,9 @@ omginstance = {
 					instance.events:server_started(runtime_qualifier)
 				end
 
-				instance.client:create_token(function(api_token, dispatcher_url)
+				instance.client:create_token(function(api_token, dispatcher_config)
 					if dispatched or false then
-						instance.dispatcher:connect(dispatcher_url, callback)
+						instance.dispatcher:connect(dispatcher_config, callback)
 					else
 						callback()
 					end

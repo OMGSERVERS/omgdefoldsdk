@@ -25,11 +25,13 @@ omgdispatcher = {
 			connection = nil,
 			self_disconnection = false,
 			-- Methods
-			connect = function(instance, connection_url, callback)
+			connect = function(instance, dispatcher_config, callback)
 				local params = {
-					protocol = "omgservers"
+					protocol = dispatcher_config.sec_web_socket_protocol
 				}
 
+				local connection_url = dispatcher_config.connection_url
+				
 				if debug_logging then
 					print(os.date() .. " [OMGPLAYER] Connecting to dispatcher, url=" .. tostring(connection_url))
 				end

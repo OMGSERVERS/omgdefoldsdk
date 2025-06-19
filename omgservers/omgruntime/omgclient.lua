@@ -33,7 +33,6 @@ omgclient = {
 		return {
 			type = "omgclient",
 			api_token = nil,
-			dispatcher_url = nil,
 			messages = nil,
 			-- Methods
 			create_token = function(instance, callback)
@@ -45,14 +44,13 @@ omgclient = {
 
 				local response_handler = function(response_status, response_body)
 					local api_token = response_body.api_token
-					local dispatcher_url = response_body.dispatcher_url
+					local dispatcher_config = response_body.dispatcher_config
 
 					instance.api_token = api_token
-					instance.dispatcher_url = dispatcher_url
 					instance.messages = omgmessages:create({})
 					
 					if callback then
-						callback(api_token, dispatcher_url)
+						callback(api_token, dispatcher_config)
 					end
 				end
 

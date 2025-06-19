@@ -25,16 +25,18 @@ omgdispatcher = {
 			type = "omgdispatcher",
 			connection = nil,
 			-- Methods
-			connect = function(instance, dispatcher_url, callback)
+			connect = function(instance, dispatcher_config, callback)
 				local params = {
-					protocol = "omgservers"
+					protocol = dispatcher_config.sec_web_socket_protocol
 				}
 
+				local connection_url = dispatcher_config.connection_url
+				
 				if debug_logging then
-					print(os.date() .. " [OMGSERVER] Connecting to dispatcher, url=" .. tostring(dispatcher_url))
+					print(os.date() .. " [OMGSERVER] Connecting to dispatcher, url=" .. tostring(connection_url))
 				end
 
-				local connection = websocket.connect(dispatcher_url, params, function(_, _, data)
+				local connection = websocket.connect(connection_url, params, function(_, _, data)
 					if data.event == websocket.EVENT_DISCONNECTED then
 						if debug_logging then
 							print(os.date() .. " [OMGSERVER] Dispatcher disconnected")
