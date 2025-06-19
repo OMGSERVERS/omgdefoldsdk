@@ -25,11 +25,13 @@ omgconnector = {
 			connection = nil,
 			self_disconnection = false,
 			-- Methods
-			connect = function(instance, connection_url, callback)
+			connect = function(instance, connector_config, callback)
 				local params = {
-					protocol = "omgservers"
+					protocol = connector_config.sec_web_socket_protocol
 				}
 
+				local connection_url = connector_config.connection_url
+				
 				if debug_logging then
 					print(os.date() .. " [OMGPLAYER] Connecting to connector, url=" .. tostring(connection_url))
 				end

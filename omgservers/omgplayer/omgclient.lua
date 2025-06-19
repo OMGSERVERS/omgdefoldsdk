@@ -169,7 +169,8 @@ omgclient = {
 				
 				local response_handler = function(response_status, response_body)
 					local client_id = response_body.client_id
-					local connection_url = response_body.connection_url
+					local connector_config = response_body.connector_config
+					local connection_url = connector_config.connection_url
 					
 					instance.client_id = client_id
 
@@ -178,7 +179,7 @@ omgclient = {
 					end
 					
 					if callback then
-						callback(client_id, connection_url)
+						callback(client_id, connector_config)
 					end
 				end
 				

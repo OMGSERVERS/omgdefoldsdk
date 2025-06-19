@@ -81,9 +81,8 @@ omgprocess = {
 					local upgrade_protocol = incoming_message.body.protocol
 					if upgrade_protocol == omgconstants.protocols.DISPATCHER then
 						local dispatcher_config = incoming_message.body.dispatcher_config
-						local connection_url = dispatcher_config.connection_url
 
-						dispatcher:connect(connection_url, function()
+						dispatcher:connect(dispatcher_config, function()
 							events:connection_dispatched()
 						end)
 					else
